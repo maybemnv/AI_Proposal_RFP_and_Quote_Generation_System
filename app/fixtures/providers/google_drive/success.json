@@ -1,0 +1,21 @@
+{
+  "provider": "google_drive",
+  "externalFileId": "1aB2c3D4eF5gH6iJ",
+  "documentId": "doc-northwind-v1",
+  "fileName": "Northwind Retail — Onboarding Acceleration v1.pdf",
+  "mimeType": "application/pdf",
+  "byteSize": 418302,
+  "storageUri": "gdrive://1aB2c3D4eF5gH6iJ",
+  "storedAt": "2026-08-03T13:58:00Z",
+  "sourceRecords": [
+    {
+      "id": "src-case-northwind",
+      "kind": "uploaded_file",
+      "provider": "google_drive",
+      "externalId": "1aB2c3D4eF5gH6iJ",
+      "label": "Retail onboarding case study 2025.pdf",
+      "capturedAt": "2026-08-01T09:10:00Z"
+    }
+  ],
+  "externalRequestId": "req_gd_82ba15"
+}

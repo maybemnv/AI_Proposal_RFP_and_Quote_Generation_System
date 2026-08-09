@@ -1,0 +1,31 @@
+{
+  "provider": "salesforce",
+  "externalId": "0065g00000XyZab",
+  "accountName": "Meridian Health Group",
+  "contactName": "P. Adeyemi",
+  "contactEmail": "p.adeyemi@meridianhealth.example",
+  "title": "Claims processing modernization",
+  "currency": "USD",
+  "expectedCloseDate": "2026-10-15",
+  "stage": "proposal",
+  "notes": "RFP issued 24 July, response due 21 August. Security questionnaire mandatory.",
+  "sourceRecords": [
+    {
+      "id": "src-crm-sf-0065g",
+      "kind": "crm_record",
+      "provider": "salesforce",
+      "externalId": "0065g00000XyZab",
+      "label": "Salesforce opportunity 0065g00000XyZab — Meridian Health Group",
+      "capturedAt": "2026-08-01T09:05:00Z"
+    },
+    {
+      "id": "src-rfp-meridian",
+      "kind": "uploaded_file",
+      "provider": "salesforce",
+      "externalId": "0065g00000XyZab-att-1",
+      "label": "Meridian RFP packet v3.pdf",
+      "capturedAt": "2026-08-01T09:05:00Z"
+    }
+  ],
+  "externalRequestId": "req_sf_9b04ae"
+}

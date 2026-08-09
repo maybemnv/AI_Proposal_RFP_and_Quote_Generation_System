@@ -1,0 +1,32 @@
+{
+  "provider": "pandadoc",
+  "externalDocumentId": "pd_doc_5512bc",
+  "documentId": "doc-northwind-v1",
+  "status": "sent",
+  "recipientEmail": "r.ortega@northwind-retail.example",
+  "sentAt": "2026-08-03T14:02:00Z",
+  "signingUrl": "https://app.pandadoc.example/s/pd_doc_5512bc",
+  "engagementEvents": [
+    {
+      "type": "sent",
+      "at": "2026-08-03T14:02:00Z",
+      "actor": "r.ortega@northwind-retail.example"
+    },
+    {
+      "type": "viewed",
+      "at": "2026-08-03T16:41:00Z",
+      "actor": "r.ortega@northwind-retail.example"
+    },
+    {
+      "type": "viewed",
+      "at": "2026-08-04T09:12:00Z",
+      "actor": "j.calloway@northwind-retail.example"
+    },
+    {
+      "type": "signed",
+      "at": "2026-08-05T11:26:00Z",
+      "actor": "r.ortega@northwind-retail.example"
+    }
+  ],
+  "externalRequestId": "req_pd_41ac70"
+}

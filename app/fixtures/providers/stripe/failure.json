@@ -1,0 +1,7 @@
+{
+  "code": "UNKNOWN",
+  "provider": "stripe",
+  "message": "payment_link.create failed with an unreported error. Support id st_9d14; retrying will not help.",
+  "retryable": false,
+  "externalRequestId": "req_st_3b77cf"
+}

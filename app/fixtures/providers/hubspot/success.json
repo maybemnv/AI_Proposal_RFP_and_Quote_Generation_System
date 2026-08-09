@@ -1,0 +1,31 @@
+{
+  "provider": "hubspot",
+  "externalId": "hs-9001",
+  "accountName": "Northwind Retail",
+  "contactName": "R. Ortega",
+  "contactEmail": "r.ortega@northwind-retail.example",
+  "title": "Customer onboarding acceleration",
+  "currency": "USD",
+  "expectedCloseDate": "2026-09-30",
+  "stage": "proposal",
+  "notes": "Onboarding takes six weeks today. Target is three. Steering group meets fortnightly.",
+  "sourceRecords": [
+    {
+      "id": "src-crm-hs-9001",
+      "kind": "crm_record",
+      "provider": "hubspot",
+      "externalId": "hs-9001",
+      "label": "HubSpot deal 9001 — Northwind Retail",
+      "capturedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "src-crm-hs-9001-notes",
+      "kind": "note",
+      "provider": "hubspot",
+      "externalId": "hs-9001-note-4",
+      "label": "Discovery call notes, 29 July",
+      "capturedAt": "2026-08-01T09:00:00Z"
+    }
+  ],
+  "externalRequestId": "req_hs_3c81f4"
+}
