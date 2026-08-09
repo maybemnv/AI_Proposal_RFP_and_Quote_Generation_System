@@ -288,6 +288,45 @@ def low_confidence_requirements() -> list[Requirement]:
     return _requirements(confidence="low")
 
 
+# --- documents --------------------------------------------------------------
+
+
+@pytest.fixture
+def sections() -> list[GeneratedSection]:
+    return _sections()
+
+
+@pytest.fixture
+def claims_by_id() -> dict:
+    return {CITED_CLAIM: _approved_claim(CITED_CLAIM)}
+
+
+@pytest.fixture
+def evidence_by_claim() -> dict:
+    return {CITED_CLAIM: _approved_claim(CITED_CLAIM).evidence}
+
+
+@pytest.fixture
+def version_with_optional_line(consulting_rule, sample_scope) -> ProposalVersion:
+    """One selected line and one optional line left unselected.
+
+    I4 on the page: the optional line is priced and labelled, and the total is
+    the selected line alone.
+    """
+    quote = calculate_quote(
+        [{"id": "l1", "label": "Senior consulting", "ruleId": consulting_rule.id,
+          "quantity": Decimal(10), "optional": False, "selected": True,
+          "sourceRecordIds": ["src-rate-card"]},
+         {"id": "l2", "label": "Change management support", "ruleId": consulting_rule.id,
+          "quantity": Decimal(5), "optional": True, "selected": False,
+          "sourceRecordIds": ["src-rate-card"]}],
+        {consulting_rule.id: consulting_rule},
+        "USD",
+        calculated_at=NOW,
+    )
+    return _version("locked", sample_scope, quote)
+
+
 @pytest.fixture
 def rejected_approval() -> list[Approval]:
     return [

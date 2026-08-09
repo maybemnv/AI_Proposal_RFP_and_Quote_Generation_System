@@ -1,0 +1,225 @@
+{#
+  The client-facing proposal.
+
+  Two rules this template does not break:
+
+  1. It never does arithmetic. Every figure arrives already computed by the
+     pricing engine and is rendered through `money`, which is `format_minor`.
+     A template that adds numbers is a second pricing implementation, and the
+     two will disagree.
+
+  2. Every claim-backed sentence carries `data-claim-id` and its source record
+     ids. That markup is what makes I1 survive into the PDF — the evidence trail
+     is in the document a client receives, not only in the reviewer's screen.
+
+  Section order follows the PRD: cover, executive summary, understanding, scope,
+  milestones, assumptions, options, pricing, payment schedule, case studies,
+  next steps.
+#}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ version.title }}</title>
+<style>{{ stylesheet }}</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="meta">Proposal · Version {{ version.version_number }}</p>
+  <p class="display">{{ version.title }}</p>
+  <p class="meta">
+    <span>{{ account_name }}</span>
+    <span>{{ version.quote.currency }}</span>
+    <span>Prepared {{ version.created_at[:10] }}</span>
+  </p>
+</header>
+
+{% macro render_blocks(key) %}
+  {%- set section = sections_by_key.get(key) -%}
+  {%- if section -%}
+    {%- for block in section.blocks %}
+      {%- set cited = block.claim_ids | select("in", claims_by_id) | list %}
+      <div class="block">
+        {%- if cited %}
+        <p>
+          <span class="claim"
+                data-claim-id="{{ cited | join(' ') }}"
+                data-source-record-id="{{ block.source_record_ids | join(' ') }}"
+          >{{ block.content }}</span>
+        </p>
+        {%- for claim_id in cited %}
+          {%- for link in evidence_by_claim.get(claim_id, []) %}
+        <p class="evidence-note">
+          Evidence: {{ link.excerpt }} ({{ link.locator }}, source {{ link.source_record_id }})
+        </p>
+          {%- endfor %}
+        {%- endfor %}
+        {%- else %}
+        <p data-source-record-id="{{ block.source_record_ids | join(' ') }}">{{ block.content }}</p>
+        {%- endif %}
+      </div>
+    {%- endfor %}
+  {%- endif %}
+{% endmacro %}
+
+<section id="executive-summary">
+  <h1>Executive summary</h1>
+  {{ render_blocks("executive_summary") }}
+</section>
+
+<section id="understanding">
+  <h2>Our understanding</h2>
+  {{ render_blocks("understanding") }}
+</section>
+
+<section id="scope">
+  <h2>Scope of work</h2>
+  {{ render_blocks("scope") }}
+  {%- if version.scope.deliverables %}
+  <ul>
+    {%- for item in version.scope.deliverables %}
+    <li>
+      <strong>{{ item.name }}</strong>{% if item.optional %}<span class="optional-tag">Optional</span>{% endif %}
+      — {{ item.description }} ({{ item.quantity | int }} {{ item.unit }})
+    </li>
+    {%- endfor %}
+  </ul>
+  {%- endif %}
+  {%- if version.scope.exclusions %}
+  <p class="note">Not included: {{ version.scope.exclusions | join("; ") }}.</p>
+  {%- endif %}
+</section>
+
+<section id="milestones">
+  <h2>Milestones</h2>
+  {{ render_blocks("milestones") }}
+  {%- if version.scope.milestones %}
+  <ul>
+    {%- for m in version.scope.milestones | sort(attribute="sequence") %}
+    <li><strong>{{ m.sequence }}. {{ m.name }}</strong> — {{ m.target_description }}</li>
+    {%- endfor %}
+  </ul>
+  {%- endif %}
+</section>
+
+<section id="assumptions">
+  <h2>Assumptions</h2>
+  {{ render_blocks("assumptions") }}
+  {%- if version.scope.assumptions %}
+  <ul>
+    {%- for a in version.scope.assumptions %}
+    <li>{{ a.text }}{% if a.customer_confirmation_required %} <em>(confirmation required)</em>{% endif %}</li>
+    {%- endfor %}
+  </ul>
+  {%- endif %}
+</section>
+
+{%- if optional_lines %}
+<section id="options">
+  <h2>Options</h2>
+  {{ render_blocks("options") }}
+  <p class="note">
+    Optional lines are priced below. Only the lines marked as selected are
+    included in the total; taking or leaving an option changes nothing else in
+    this proposal.
+  </p>
+</section>
+{%- endif %}
+
+<section id="pricing">
+  <h2>Investment</h2>
+  {{ render_blocks("pricing") }}
+  <table class="quote">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th class="num">Qty</th>
+        <th class="num">Unit</th>
+        <th class="num">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%- for line in version.quote.lines %}
+      <tr class="{% if not line.selected %}unselected{% endif %}">
+        <td>
+          <span class="label-text">{{ line.label }}</span>
+          {%- if line.optional %}<span class="optional-tag">Optional{% if not line.selected %} · not selected{% endif %}</span>{% endif %}
+        </td>
+        <td class="num">{{ qty(line.quantity) }}</td>
+        <td class="num">{{ money(line.unit_price_minor) }}</td>
+        <td class="num">{{ money(line.subtotal_minor) }}</td>
+      </tr>
+      {%- endfor %}
+      <tr class="totals">
+        <td colspan="3" class="num">Subtotal</td>
+        <td class="num">{{ money(version.quote.subtotal_minor) }}</td>
+      </tr>
+      {%- if version.quote.discount_minor %}
+      <tr class="totals">
+        <td colspan="3" class="num">Discount</td>
+        <td class="num">-{{ money(version.quote.discount_minor) }}</td>
+      </tr>
+      {%- endif %}
+      {%- if version.quote.tax_minor %}
+      <tr class="totals">
+        <td colspan="3" class="num">Tax</td>
+        <td class="num">{{ money(version.quote.tax_minor) }}</td>
+      </tr>
+      {%- endif %}
+      <tr class="totals total-row">
+        <td colspan="3" class="num">Total</td>
+        <td class="num">{{ money(version.quote.total_minor) }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="note">
+    Priced on rate card version {{ version.quote.pricing_rule_version }},
+    calculated {{ version.quote.calculated_at[:10] }}.
+  </p>
+</section>
+
+{%- if version.quote.payment_schedule %}
+<section id="payment-schedule">
+  <h2>Payment schedule</h2>
+  {{ render_blocks("payment_schedule") }}
+  <table class="quote">
+    <thead>
+      <tr><th>Stage</th><th>Due</th><th class="num">Amount</th></tr>
+    </thead>
+    <tbody>
+      {%- for i in version.quote.payment_schedule | sort(attribute="sequence") %}
+      <tr>
+        <td>{{ i.sequence }}. {{ i.label }}</td>
+        <td>{{ i.due_description }}</td>
+        <td class="num">{{ money(i.amount_minor) }}</td>
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</section>
+{%- endif %}
+
+<section id="case-studies">
+  <h2>Relevant experience</h2>
+  {{ render_blocks("case_studies") }}
+</section>
+
+<section id="rfp-answers">
+  {{ render_blocks("rfp_answers") }}
+</section>
+
+<section id="next-steps">
+  <h2>Next steps</h2>
+  {{ render_blocks("next_steps") }}
+</section>
+
+<footer class="footer">
+  <p>
+    {{ version.title }} · Version {{ version.version_number }} ·
+    Quote reference {{ version.quote.input_hash[:12] }}
+  </p>
+</footer>
+
+</body>
+</html>
