@@ -2204,7 +2204,7 @@ git commit -m "feat: Next.js shell with validated light and dark token palettes"
 
 **Screen 3 — scope** (`/proposals/:id/scope`): deliverables (with an `Optional` toggle), milestones in sequence, assumptions, exclusions, and open questions. Resolving an open question is a real mutation, because Task 19's trace test drives it.
 
-- [ ] **Step 1: Write the failing E2E test**
+- [x] **Step 1: Write the failing E2E test**
 
 ```ts
 test("importing a hubspot opportunity lands normalized", async ({ page }) => {
@@ -2241,28 +2241,28 @@ test("resolving the open question clears the scope warning", async ({ page }) =>
 });
 ```
 
-- [ ] **Step 2: Run it to verify it fails**
+- [x] **Step 2: Run it to verify it fails**
 
 Run: `npm run e2e -- e2e/workspace.spec.ts`
 Expected: FAIL — routes do not exist.
 
-- [ ] **Step 3: Implement the three screens**
+- [x] **Step 3: Implement the three screens**
 
 Server components fetch through `lib/api`; the editing surfaces are client components. Keep each route file under ~200 lines by pushing the repeated pieces into the components listed above.
 
-- [ ] **Step 4: Run it to verify it passes**
+- [x] **Step 4: Run it to verify it passes**
 
 Run: `npm run e2e -- e2e/workspace.spec.ts`
 Expected: PASS — 4 passed.
 
-- [ ] **Step 5: Screenshot and eyeball the layout**
+- [x] **Step 5: Screenshot and eyeball the layout**
 
 ```bash
 npx playwright test e2e/workspace.spec.ts --update-snapshots
 ```
 Open the captured PNGs and check for label collisions, overflow, and the evidence rail at 1280px and 1440px. Fix anything visibly broken before committing — the validator checks color, not layout.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add app/web/app/opportunities app/web/app/proposals app/web/components app/web/e2e/workspace.spec.ts
