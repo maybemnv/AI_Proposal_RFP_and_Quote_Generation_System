@@ -2,6 +2,37 @@ export type DemoEvidence = {sourceRecordId: string; locator: string; excerpt: st
 export type DemoClaim = {id: string; text: string; status: string; evidence: DemoEvidence[]};
 export type DemoBlock = {blockId: string; content: string; claimIds: string[]; sourceRecordIds: string[]};
 export type DemoSection = {key: string; blocks: DemoBlock[]};
+export type DemoQuoteLine = {
+  id: string;
+  label: string;
+  ruleId: string;
+  ruleVersion: string;
+  quantity: number;
+  unit: string;
+  unitPriceMinor: number;
+  subtotalMinor: number;
+  optional: boolean;
+  selected: boolean;
+};
+export type DemoQuote = {
+  currency: string;
+  lines: DemoQuoteLine[];
+  subtotalMinor: number;
+  discountMinor: number;
+  taxMinor: number;
+  totalMinor: number;
+  paymentSchedule: {id: string; label: string; percent: number; amountMinor: number}[];
+  status: "calculated" | "review_required";
+  policyMessage?: string;
+};
+export type DemoApproval = {
+  id: string;
+  kind: "claim" | "scope" | "quote" | "proposal";
+  requiredRole: "content_editor" | "quote_approver" | "proposal_approver";
+  decision: "pending" | "approved" | "rejected";
+  reviewer?: string;
+  comment?: string;
+};
 
 export const demoClaims: Record<string, DemoClaim> = {
   "claim-onboarding-40": {
@@ -48,6 +79,49 @@ export const demoScope = {
   exclusions: ["Paid media and ongoing campaign operations", "Replatforming unrelated back-office tools"],
   openQuestions: ["req_legacy_cms"],
 };
+
+const quoteCatalog = [
+  {id: "line-strategy", label: "Strategy day", ruleId: "rule_strategy_day", ruleVersion: "2026.1", quantity: 2, unit: "day", unitPriceMinor: 120000, optional: false},
+  {id: "line-design", label: "Design sprint", ruleId: "rule_design_sprint", ruleVersion: "2026.1", quantity: 1, unit: "sprint", unitPriceMinor: 300000, optional: false},
+  {id: "line-optional-training", label: "Training session", ruleId: "rule_training", ruleVersion: "2026.1", quantity: 1, unit: "session", unitPriceMinor: 150000, optional: true},
+];
+
+export function calculateDemoQuote(
+  selectedOptionalIds: string[] = [], discountMinor = 0, taxMinor = 0,
+): DemoQuote {
+  const lines = quoteCatalog.map((line) => ({
+    ...line,
+    selected: !line.optional || selectedOptionalIds.includes(line.id),
+    subtotalMinor: line.quantity * line.unitPriceMinor,
+  }));
+  const subtotalMinor = lines.filter((line) => line.selected)
+    .reduce((sum, line) => sum + line.subtotalMinor, 0);
+  const totalMinor = subtotalMinor - discountMinor + taxMinor;
+  const reviewReasons = [
+    discountMinor > subtotalMinor * 0.1 ? "exceeds 10%" : "",
+    discountMinor > 250000 ? "exceeds the 2,500.00 USD limit" : "",
+  ].filter(Boolean);
+  const status = reviewReasons.length ? "review_required" : "calculated";
+  return {
+    currency: "USD", lines, subtotalMinor, discountMinor, taxMinor, totalMinor,
+    paymentSchedule: [
+      {id: "deposit", label: "Kickoff deposit", percent: 50, amountMinor: Math.floor(totalMinor * 0.5)},
+      {id: "midpoint", label: "Midpoint acceptance", percent: 30, amountMinor: Math.floor(totalMinor * 0.3)},
+      {id: "handover", label: "Handover", percent: 20, amountMinor: totalMinor - Math.floor(totalMinor * 0.5) - Math.floor(totalMinor * 0.3)},
+    ],
+    status,
+    ...(reviewReasons.length ? {policyMessage: `Discount ${discountMinor / 100}.00 USD ${reviewReasons.join(" and ")}.`} : {}),
+  };
+}
+
+export const demoQuote = calculateDemoQuote();
+
+export const demoApprovals: DemoApproval[] = [
+  {id: "approval-claim", kind: "claim", requiredRole: "content_editor", decision: "approved", reviewer: "Maya Chen", comment: "Evidence links checked."},
+  {id: "approval-scope", kind: "scope", requiredRole: "content_editor", decision: "approved", reviewer: "Maya Chen", comment: "Scope is inside the brief."},
+  {id: "approval-quote", kind: "quote", requiredRole: "quote_approver", decision: "pending"},
+  {id: "approval-proposal", kind: "proposal", requiredRole: "proposal_approver", decision: "pending"},
+];
 
 export const demoVersion = {
   id: "version_northwind", proposalId: "proposal_northwind", versionNumber: 1,

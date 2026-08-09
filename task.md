@@ -2288,7 +2288,7 @@ A discount past the `DiscountPolicy` threshold flips the quote to `review_requir
 
 **Approval page** (`/proposals/:id/approval`): one `<ApprovalCard>` per required approval showing kind, required role, decision, reviewer, and comment. Submit is disabled while any blocking flag is open, with the flags listed beside the button rather than in a tooltip. Approving the last card locks the version and the whole page switches to read-only.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `e2e/quote.spec.ts`:
 
@@ -2362,16 +2362,16 @@ test("approving the last approval locks the version", async ({ page }) => {
 });
 ```
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run e2e -- e2e/quote.spec.ts e2e/approval.spec.ts`
 Expected: FAIL — routes do not exist.
 
-- [ ] **Step 3: Implement both screens**
+- [x] **Step 3: Implement both screens**
 
 Money cells carry both the formatted text and a `data-minor` integer attribute, which is what lets the tests assert the invariant arithmetic without parsing formatted strings.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run e2e -- e2e/quote.spec.ts e2e/approval.spec.ts`
 Expected: PASS — 8 passed.
