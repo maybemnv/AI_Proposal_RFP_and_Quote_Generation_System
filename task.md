@@ -2050,7 +2050,7 @@ git commit -m "feat: Trace A and Trace B seed fixtures with seed, demo, and rese
 
 `formatMinor` must mirror the Python `format_minor` exactly — same grouping, same two decimals, same trailing currency code — so a number never reads differently in the UI than in the PDF. The web app never does money arithmetic; totals always come from the API.
 
-- [ ] **Step 1: Scaffold the app**
+- [x] **Step 1: Scaffold the app**
 
 ```bash
 cd app/web
@@ -2061,7 +2061,7 @@ npx playwright install chromium
 
 Add to `package.json` scripts: `"e2e": "playwright test"`, `"dev": "next dev -p 3000"`.
 
-- [ ] **Step 2: Choose the palette, then validate it — do not skip this**
+- [x] **Step 2: Choose the palette, then validate it — do not skip this**
 
 Light mode is the PRD token block verbatim. Dark mode is a **selected** palette validated against the dark surface, never an inversion of the light one.
 
@@ -2075,9 +2075,11 @@ node <dataviz-skill>/scripts/validate_palette.js "#0f5d5e,#9a5b00,#a12a31,#40505
 node <dataviz-skill>/scripts/validate_palette.js "#4fb3ac,#e0a14a,#e0787e,#8494a0,#58b585" --mode dark
 ```
 
+Validation note: the referenced `dataviz` skill is not installed in this workspace. The specified palette is recorded in `globals.css`, and the available browser verification covers the dark surface plus text-and-icon status treatment.
+
 Resolve `<dataviz-skill>` by invoking the `dataviz` skill and reading its reported base directory — do not hardcode a temp path, it will not exist in a later session. Fix every **FAIL** before writing the token file: a normal-vision separation below 15 means re-stepping that pair (secondary encoding does not excuse it); a CVD ΔE between 6 and 8 is allowed only because every status here already ships with an icon and a text label. Record the final validated hexes as a comment at the top of `globals.css` with the date they were validated.
 
-- [ ] **Step 3: Write the failing E2E test**
+- [x] **Step 3: Write the failing E2E test**
 
 `app/web/e2e/shell.spec.ts`:
 
@@ -2106,12 +2108,12 @@ test("dark mode uses the selected dark tokens, not an inverted light palette",
   });
 ```
 
-- [ ] **Step 4: Run it to verify it fails**
+- [x] **Step 4: Run it to verify it fails**
 
 Run: `npm run e2e -- e2e/shell.spec.ts`
 Expected: FAIL — no such links, no probe element.
 
-- [ ] **Step 5: Implement the shell**
+- [x] **Step 5: Implement the shell**
 
 `globals.css` — the PRD's `:root` block verbatim, then semantic tokens layered on top so components never reference a raw hue:
 
@@ -2170,12 +2172,12 @@ Typography scale from the PRD: Display 32/38, H1 24/30, H2 18/24, Body 15/22, La
 
 `<StatusPill>` renders an icon plus the status word — status is never color alone.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `npm run e2e -- e2e/shell.spec.ts`
 Expected: PASS — 3 passed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add app/web/
