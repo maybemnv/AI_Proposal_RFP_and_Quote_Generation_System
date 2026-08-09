@@ -94,11 +94,14 @@ def calculate_quote(
 
         # Step 3 — line subtotal from integer unit price and Decimal quantity.
         subtotal = line_subtotal_minor(rule.unit_price_minor, qty)
+        selected = raw.get("selected", True)
+        if not rule.optional and not selected:
+            raise PricingError(f"mandatory pricing rule {rule.id} cannot be deselected")
         versions.add(rule.version)
         priced.append(QuoteLine(
             id=raw["id"], label=raw["label"], rule_id=rule.id, quantity=float(qty),
             unit_price_minor=rule.unit_price_minor, subtotal_minor=subtotal,
-            optional=raw.get("optional", False), selected=raw.get("selected", True),
+            optional=rule.optional, selected=selected,
             source_record_ids=raw.get("sourceRecordIds", []),
         ))
 
@@ -126,6 +129,7 @@ def calculate_quote(
         "lines": [{"id": item.id, "ruleId": item.rule_id,
                    "quantity": str(Decimal(str(item.quantity))),
                    "unitPriceMinor": item.unit_price_minor,
+                   "optional": item.optional,
                    "selected": item.selected}
                   for item in priced],
     })

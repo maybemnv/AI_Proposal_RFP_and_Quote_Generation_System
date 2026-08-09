@@ -66,17 +66,34 @@ def test_step3_line_subtotal_is_quantity_times_unit_price():
 
 
 def test_step4_unselected_optional_line_is_excluded():
+    optional_rule = rule("r2", optional=True)
     q = calculate_quote(
-        [line(), line("l2", "r1", "1", optional=True, selected=False)],
-        {"r1": rule()}, "USD", calculated_at=NOW)
+        [line(), line("l2", "r2", "1", optional=True, selected=False)],
+        {"r1": rule(), "r2": optional_rule}, "USD", calculated_at=NOW)
     assert q.subtotal_minor == 240000
 
 
 def test_step4_selected_optional_line_is_included():
+    optional_rule = rule("r2", optional=True)
     q = calculate_quote(
-        [line(), line("l2", "r1", "1", optional=True, selected=True)],
-        {"r1": rule()}, "USD", calculated_at=NOW)
+        [line(), line("l2", "r2", "1", optional=True, selected=True)],
+        {"r1": rule(), "r2": optional_rule}, "USD", calculated_at=NOW)
     assert q.subtotal_minor == 360000
+
+
+def test_mandatory_rule_cannot_be_deselected():
+    with pytest.raises(PricingError, match="mandatory"):
+        calculate_quote([line(selected=False)], {"r1": rule(optional=False)},
+                        "USD", calculated_at=NOW)
+
+
+def test_rule_optionality_overrides_caller_flags():
+    mandatory = calculate_quote(
+        [line(optional=True)], {"r1": rule(optional=False)}, "USD", calculated_at=NOW)
+    optional = calculate_quote(
+        [line(optional=False)], {"r1": rule(optional=True)}, "USD", calculated_at=NOW)
+    assert mandatory.lines[0].optional is False
+    assert optional.lines[0].optional is True
 
 
 def test_step6_total_formula():
@@ -149,4 +166,3 @@ def test_lines_spanning_two_rule_versions_are_rejected():
     with pytest.raises(PricingError, match="version"):
         calculate_quote([line(), line("l2", "r2")], {"r1": rule(), "r2": v2},
                         "USD", calculated_at=NOW)
-

@@ -7,8 +7,10 @@ from app.persistence.repositories import (
     ClaimRepo,
     OpportunityRepo,
     PricingRuleRepo,
+    SectionRepo,
     VersionRepo,
 )
+from app.domain.schemas import GeneratedBlock, GeneratedSection
 from app.persistence.session import session_scope
 
 
@@ -59,6 +61,19 @@ def test_working_version_updates_normally(engine, working_version):
         assert VersionRepo(s).get(working_version.id).title == "Revised title"
 
 
+def test_version_update_does_not_change_lifecycle_status(engine, working_version):
+    with session_scope(engine) as s:
+        VersionRepo(s).add(working_version)
+    with session_scope(engine) as s:
+        submitted = working_version.model_copy(
+            update={"status": "submitted", "title": "Revised title"})
+        VersionRepo(s).update(submitted)
+    with session_scope(engine) as s:
+        loaded = VersionRepo(s).get(working_version.id)
+    assert loaded.status == "working"
+    assert loaded.title == "Revised title"
+
+
 def test_promote_is_the_only_path_that_moves_a_locked_version(engine, locked_version):
     with session_scope(engine) as s:
         VersionRepo(s).add(locked_version)
@@ -75,6 +90,19 @@ def test_promote_still_refuses_an_illegal_transition(engine, locked_version):
         VersionRepo(s).promote(locked_version, "working")
 
 
+def test_section_replacement_is_refused_for_an_immutable_version(engine, locked_version):
+    replacement = [GeneratedSection(
+        key="scope",
+        blocks=[GeneratedBlock(
+            block_id="scope-1", content="Replacement", source_record_ids=["src-notes"]
+        )],
+    )]
+    with session_scope(engine) as s:
+        VersionRepo(s).add(locked_version)
+    with session_scope(engine) as s, pytest.raises(TransitionError, match="locked"):
+        SectionRepo(s).replace_for_version(locked_version.id, replacement)
+
+
 def test_promote_to_locked_stamps_the_content_hash(engine, working_version):
     submitted = working_version.model_copy(update={"status": "submitted"})
     with session_scope(engine) as s:
@@ -87,6 +115,25 @@ def test_promote_to_locked_stamps_the_content_hash(engine, working_version):
         row = s.get(ProposalVersionRow, submitted.id)
         assert row.content_hash == content_hash(locked)
         assert row.locked_at == "2026-08-02T09:00:00Z"
+
+
+def test_promote_to_locked_hashes_the_stored_content(engine, working_version):
+    submitted = working_version.model_copy(update={"status": "submitted"})
+    forged = submitted.model_copy(update={
+        "status": "locked",
+        "title": "Forged title",
+        "locked_at": "2026-08-02T09:00:00Z",
+    })
+    expected_locked = submitted.model_copy(update={
+        "status": "locked", "locked_at": forged.locked_at})
+    with session_scope(engine) as s:
+        VersionRepo(s).add(submitted)
+    with session_scope(engine) as s:
+        VersionRepo(s).promote(forged, "locked")
+    with session_scope(engine) as s:
+        row = s.get(ProposalVersionRow, submitted.id)
+    assert row.content_hash == content_hash(expected_locked)
+    assert row.content_hash != content_hash(forged)
 
 
 def test_get_missing_version_raises_keyerror(engine):

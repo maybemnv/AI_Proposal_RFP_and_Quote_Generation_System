@@ -313,14 +313,18 @@ def version_with_optional_line(consulting_rule, sample_scope) -> ProposalVersion
     I4 on the page: the optional line is priced and labelled, and the total is
     the selected line alone.
     """
+    optional_rule = consulting_rule.model_copy(update={
+        "id": "rule-change-management", "label": "Change management support",
+        "optional": True,
+    })
     quote = calculate_quote(
         [{"id": "l1", "label": "Senior consulting", "ruleId": consulting_rule.id,
           "quantity": Decimal(10), "optional": False, "selected": True,
           "sourceRecordIds": ["src-rate-card"]},
-         {"id": "l2", "label": "Change management support", "ruleId": consulting_rule.id,
+         {"id": "l2", "label": "Change management support", "ruleId": optional_rule.id,
           "quantity": Decimal(5), "optional": True, "selected": False,
           "sourceRecordIds": ["src-rate-card"]}],
-        {consulting_rule.id: consulting_rule},
+        {consulting_rule.id: consulting_rule, optional_rule.id: optional_rule},
         "USD",
         calculated_at=NOW,
     )

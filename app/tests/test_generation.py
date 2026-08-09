@@ -78,6 +78,23 @@ def test_snapshot_hash_moves_when_a_source_changes(draft_request):
     assert source_snapshot_hash(edited) != source_snapshot_hash(draft_request)
 
 
+def test_snapshot_hash_moves_when_claim_content_changes(draft_request):
+    first, *rest = draft_request.approved_claims
+    edited = draft_request.model_copy(update={
+        "approved_claims": [first.model_copy(update={"text": "Revised claim"}), *rest]
+    })
+    assert source_snapshot_hash(edited) != source_snapshot_hash(draft_request)
+
+
+def test_snapshot_hash_moves_when_claim_evidence_changes(draft_request):
+    first, *rest = draft_request.approved_claims
+    evidence = first.evidence[0].model_copy(update={"excerpt": "Revised evidence"})
+    edited = draft_request.model_copy(update={
+        "approved_claims": [first.model_copy(update={"evidence": [evidence]}), *rest]
+    })
+    assert source_snapshot_hash(edited) != source_snapshot_hash(draft_request)
+
+
 def test_block_ids_are_assigned_by_us_not_by_the_model(draft_request):
     request = draft_request.model_copy(update={"requested_sections": ["understanding"]})
     ids = [b.block_id for b in generate(request).sections[0].blocks]
@@ -123,6 +140,21 @@ def test_expired_claim_is_dropped_and_flagged(draft_request_with_expired_claim):
     response = generate(draft_request_with_expired_claim)
     assert any(f.code == "UNAPPROVED_CLAIM" for f in response.unresolved_flags)
     assert response.claims_used == []
+
+
+def test_approved_claim_without_evidence_is_dropped_and_flagged(draft_request):
+    claim = draft_request.approved_claims[0]
+    request = draft_request.model_copy(update={
+        "approved_claims": [claim.model_copy(update={"evidence": []})]
+    })
+    rogue = SectionOutput(key="case_studies", blocks=[BlockOutput(
+        content=claim.text,
+        claim_ids=[claim.id],
+        source_record_ids=["src-case-northwind"],
+    )])
+    response = _respond(request, [rogue], NOW)
+    assert response.sections[0].blocks == []
+    assert [flag.code for flag in response.unresolved_flags] == ["UNAPPROVED_CLAIM"]
 
 
 def test_dropped_block_flags_name_the_block(draft_request_with_pending_claim):

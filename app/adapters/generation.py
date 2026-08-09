@@ -75,7 +75,10 @@ def source_snapshot_hash(request: GenerateDraftRequest) -> str:
         "discovery": [d.model_dump(by_alias=True) for d in request.discovery],
         "requirements": [r.model_dump(by_alias=True) for r in request.requirements],
         "scope": request.scope.model_dump(by_alias=True) if request.scope else None,
-        "claims": sorted(c.id for c in request.approved_claims),
+        "claims": [
+            claim.model_dump(by_alias=True)
+            for claim in sorted(request.approved_claims, key=lambda item: item.id)
+        ],
         "templateId": request.template_id,
     })
 
@@ -83,7 +86,10 @@ def source_snapshot_hash(request: GenerateDraftRequest) -> str:
 def _usable_claim_ids(request: GenerateDraftRequest, now: str) -> set[str]:
     """I7 at the generation boundary: a claim outside its validity window, or not
     approved, cannot enter a new version even if it was passed in."""
-    return {c.id for c in request.approved_claims if usable_in_new_version(c, now)}
+    return {
+        c.id for c in request.approved_claims
+        if usable_in_new_version(c, now) and c.evidence
+    }
 
 
 def _enforce(

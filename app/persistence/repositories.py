@@ -236,6 +236,10 @@ class SectionRepo(Repo):
     def replace_for_version(
         self, proposal_version_id: str, sections: list[GeneratedSection]
     ) -> None:
+        parent = self.s.get(ProposalVersionRow, proposal_version_id)
+        if parent is None:
+            raise KeyError(proposal_version_id)
+        assert_mutable(VersionRepo(self.s)._to_model(parent))
         for existing in self.s.scalars(
             select(GeneratedSectionRow).where(
                 GeneratedSectionRow.proposal_version_id == proposal_version_id)
@@ -302,6 +306,8 @@ class VersionRepo(Repo):
             raise KeyError(version.id)
         assert_mutable(self._to_model(row))
         for column, value in self._row_values(version).items():
+            if column in {"status", "locked_at"}:
+                continue
             setattr(row, column, value)
 
     def promote(self, version: ProposalVersion, target: str) -> None:
@@ -309,13 +315,15 @@ class VersionRepo(Repo):
         row = self.s.get(ProposalVersionRow, version.id)
         if row is None:
             raise KeyError(version.id)
-        assert_transition("proposal_version", row.status, target)
+        stored = self._to_model(row)
+        assert_transition("proposal_version", stored.status, target)
         row.status = target
         if target == "locked":
-            row.locked_at = version.locked_at
-            row.content_hash = content_hash(version)
+            locked = stored.model_copy(update={
+                "status": "locked", "locked_at": version.locked_at})
+            row.locked_at = locked.locked_at
+            row.content_hash = content_hash(locked)
 
     def next_version_number(self, proposal_id: str) -> int:
         existing = [v.version_number for v in self.list(proposal_id=proposal_id)]
         return max(existing, default=0) + 1
-
