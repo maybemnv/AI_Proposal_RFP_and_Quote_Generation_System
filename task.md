@@ -391,7 +391,7 @@ git commit -m "feat: Pydantic mirrors of the canonical PRD contracts (camelCase 
 7. Payment installments must sum to exactly `totalMinor`.
 8. Persist the rule version per line, the inputs, the output, and `inputHash` (I2).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `app/tests/test_pricing.py`:
 
@@ -508,7 +508,7 @@ def test_float_quantity_rejected():
         calculate_quote([bad], {"r1": rule()}, "USD", calculated_at=NOW)
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `pytest app/tests/test_pricing.py -v`
 Expected: FAIL — `app.domain.pricing` does not exist.
@@ -1868,7 +1868,7 @@ def test_every_mutation_wrote_an_audit_event(client, delivered_version_id):
 Run: `pytest app/tests/test_api.py -v`
 Expected: FAIL — `app.api.main` does not exist.
 
-- [ ] **Step 3: Implement the API**
+- [x] **Step 3: Implement the API**
 
 `app/api/main.py`:
 
@@ -1896,17 +1896,17 @@ app = create_app()
 
 Each route module is thin: parse, call a domain function, persist, `record_event`, return. All business rules stay in `app/domain/`. Blocking flags map to 409, adapter failures to 502, role violations to 403.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `pytest app/tests/test_api.py -v`
-Expected: PASS — 11 passed.
+Expected: PASS — 13 passed.
 
-- [ ] **Step 5: Run the whole suite and lint**
+- [x] **Step 5: Run the whole suite and lint**
 
 Run: `pytest -q` then `ruff check app/`
-Expected: all green.
+Expected: all green. Verified with the repository virtual environment: 333 tests passed and `ruff check app` passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add app/api/ app/tests/test_api.py
