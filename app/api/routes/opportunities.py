@@ -1,5 +1,8 @@
 """Opportunity import and normalization endpoints."""
 
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -8,8 +11,8 @@ from app.adapters.base import AdapterFailure
 from app.api import deps
 from app.api.utils import dump, new_id
 from app.domain.audit import record_event
-from app.domain.schemas import Opportunity, SourceRecord
-from app.persistence.repositories import OpportunityRepo, SourceRecordRepo
+from app.domain.schemas import Opportunity, Requirement, SourceRecord
+from app.persistence.repositories import OpportunityRepo, RequirementRepo, SourceRecordRepo
 
 router = APIRouter()
 
@@ -26,18 +29,35 @@ def import_opportunity(
     actor: dict = Depends(deps.current_actor),
 ):
     provider = body.get("provider", "manual")
-    try:
-        adapter = get_adapter(provider)
-    except ValueError:
-        from app.api.utils import flag, flags_response
+    fixture = None
+    if body.get("fixture"):
+        fixture_path = Path(__file__).resolve().parents[2] / "fixtures" / f"{body['fixture']}.json"
+        if not fixture_path.exists():
+            from app.api.utils import flag, flags_response
 
-        return flags_response([flag("SCHEMA_ERROR", f"unknown provider {provider}", [])], 422)
+            return flags_response([flag("SCHEMA_ERROR", f"unknown fixture {body['fixture']}", [])], 422)
+        fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+        result = {
+            "sourceRecords": [
+                {**raw, "label": raw.get("title"), "kind": raw.get("sourceType")}
+                for raw in fixture["sourceRecords"]
+            ],
+            **fixture["opportunity"],
+            "__fixture": fixture,
+        }
+    else:
+        try:
+            adapter = get_adapter(provider)
+        except ValueError:
+            from app.api.utils import flag, flags_response
 
-    result = adapter.execute(body)
-    if isinstance(result, AdapterFailure):
-        from fastapi.responses import JSONResponse
+            return flags_response([flag("SCHEMA_ERROR", f"unknown provider {provider}", [])], 422)
 
-        return JSONResponse(status_code=502, content=dump(result))
+        result = adapter.execute(body)
+        if isinstance(result, AdapterFailure):
+            from fastapi.responses import JSONResponse
+
+            return JSONResponse(status_code=502, content=dump(result))
 
     source_repo = SourceRecordRepo(session)
     source_ids: list[str] = []
@@ -46,14 +66,14 @@ def import_opportunity(
         source_ids.append(source_id)
         source = SourceRecord(
             id=source_id,
-            provider=provider,
+            provider=raw.get("provider", provider),
             external_id=raw.get("externalId"),
             title=raw.get("label") or raw.get("title") or source_id,
             uri=raw.get("uri"),
             retrieved_at=raw.get("capturedAt", clock),
             content_hash=raw.get("contentHash", f"fixture-{source_id}"),
             excerpt=raw.get("excerpt"),
-            source_type=_source_type(raw.get("kind", "manual")),
+            source_type=_source_type(raw.get("kind", raw.get("sourceType", "manual"))),
             approved_for_generation=True,
         )
         if source_repo.find(source_id):
@@ -68,7 +88,7 @@ def import_opportunity(
         field for field, value in (("accountName", account_name), ("title", title))
         if not str(value or "").strip()
     ]
-    opportunity_id = body.get("opportunityId") or (
+    opportunity_id = body.get("opportunityId") or result.get("id") or (
         f"opp-{provider}-{external_id}" if external_id else new_id("opp")
     )
     opportunity = Opportunity(
@@ -89,6 +109,12 @@ def import_opportunity(
         opportunities.update(opportunity)
     else:
         opportunities.add(opportunity)
+    if fixture:
+        requirements = RequirementRepo(session)
+        for raw in fixture.get("requirements", []):
+            requirement = Requirement.model_validate(raw)
+            if requirements.find(requirement.id) is None:
+                requirements.add_for_opportunity(opportunity.id, requirement)
     record_event(
         session,
         workspace_id="workspace-demo",

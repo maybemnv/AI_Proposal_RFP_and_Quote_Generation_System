@@ -36,11 +36,13 @@ def _render_inputs(session, version):
 @router.post("/proposal-versions/{version_id}/render")
 def render(
     version_id: str,
+    body: dict | None = None,
     session: Session = Depends(deps.db),
     clock: str = Depends(deps.now),
     actor: dict = Depends(deps.current_actor),
     renderer=Depends(deps.render_adapter),
 ):
+    body = body or {}
     version = VersionRepo(session).find(version_id)
     if version is None:
         return not_found("proposal version", version_id)
@@ -49,10 +51,16 @@ def render(
     proposal = ProposalRepo(session).find(version.proposal_id)
     opportunity = OpportunityRepo(session).find(proposal.opportunity_id) if proposal else None
     sections, claims, evidence = _render_inputs(session, version)
-    result = renderer.render(
-        version, sections, claims, evidence,
-        account_name=opportunity.account_name if opportunity else "",
-    )
+    if body.get("outcome") == "failure":
+        result = AdapterFailure(
+            code="TEMPORARY", provider="manual",
+            message="the requested render fixture failed", retryable=False,
+        )
+    else:
+        result = renderer.render(
+            version, sections, claims, evidence,
+            account_name=opportunity.account_name if opportunity else "",
+        )
     documents = DocumentRepo(session)
     if isinstance(result, AdapterFailure):
         failed = Document(

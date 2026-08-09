@@ -2654,7 +2654,7 @@ git commit -m "feat: engagement analytics with stat tiles, event timeline, and s
 
 **Trace B:** ingest RFP text → requirements in RFP order → answers mapped to approved claims → deterministic quote → validate → approve → render → deliver, asserting answer order matches requirement order.
 
-- [ ] **Step 1: Write the failing invariant tests**
+- [x] **Step 1: Write the failing invariant tests**
 
 ```python
 def test_i1_every_client_facing_claim_is_backed(delivered_bundle):
@@ -2727,7 +2727,7 @@ def test_i10_provider_events_append_and_never_mutate(client, delivered_version_i
     assert client.get(f"/v1/proposal-versions/{delivered_version_id}").json() == before
 ```
 
-- [ ] **Step 2: Write the failing trace tests**
+- [x] **Step 2: Write the failing trace tests**
 
 ```python
 def test_trace_a_end_to_end(client, seed):
@@ -2874,25 +2874,25 @@ def test_trace_b_every_answer_cites_a_source(client, trace_b_version_id):
 
 Define `TRACE_A_QUOTE_REQUEST` and `TRACE_B_QUOTE_REQUEST` at the top of the test module as literal dicts built from the Task 13 fixture rule ids, so the trace tests never guess at pricing input.
 
-- [ ] **Step 3: Run them to verify they fail**
+- [x] **Step 3: Run them to verify they fail**
 
 Run: `pytest app/tests/test_traces.py -v`
 Expected: FAIL.
 
-- [ ] **Step 4: Fix whatever the traces expose**
+- [x] **Step 4: Fix whatever the traces expose**
 
 These tests are the first thing to exercise the whole chain, so expect gaps at the seams — a missing `promote` call, a flag that never clears, an approval role that was not required. Fix the production code, not the assertions.
 
-- [ ] **Step 5: Run them to verify they pass**
+- [x] **Step 5: Run them to verify they pass**
 
 Run: `pytest app/tests/test_traces.py -v`
-Expected: PASS — 16 passed (10 invariants + 6 trace tests).
+Expected: PASS — 17 passed (10 invariants + 7 trace checks).
 
-- [ ] **Step 6: Write the browser trace**
+- [x] **Step 6: Write the browser trace**
 
 `app/web/e2e/trace-a.spec.ts` — one Playwright test that clicks the entire demo path in the order the runbook uses, ending on the delivered preview with a downloadable PDF. This is the pre-pitch smoke test.
 
-- [ ] **Step 7: Write the runbook**
+- [x] **Step 7: Write the runbook**
 
 `docs/DEMO_RUNBOOK.md`:
 
@@ -2936,7 +2936,7 @@ produces the same PDF.
 in both modes.
 ```
 
-- [ ] **Step 8: Full verification**
+- [x] **Step 8: Full verification**
 
 ```bash
 pytest -q
@@ -2945,7 +2945,7 @@ cd app/web && npm run e2e
 ```
 Expected: every suite green.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add app/tests/test_traces.py app/web/e2e/trace-a.spec.ts docs/DEMO_RUNBOOK.md README.md

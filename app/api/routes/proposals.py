@@ -1,5 +1,8 @@
 """Proposal version lifecycle, generation, and scope endpoints."""
 
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -37,10 +40,16 @@ from app.persistence.repositories import (
     ProposalRepo,
     RequirementRepo,
     SectionRepo,
+    SourceRecordRepo,
     VersionRepo,
 )
 
 router = APIRouter()
+
+
+def _fixture(name: str) -> dict | None:
+    path = Path(__file__).resolve().parents[2] / "fixtures" / f"{name}.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
 def _empty_quote(currency: str, clock: str) -> Quote:
@@ -159,12 +168,32 @@ def attach_discovery(
     except TransitionError as exc:
         return flags_response([flag("SCHEMA_ERROR", str(exc), [version_id])])
     source_id = body.get("sourceRecordId")
-    source = __import__("app.persistence.repositories", fromlist=["SourceRecordRepo"]).SourceRecordRepo(session).find(source_id)
+    source_repo = SourceRecordRepo(session)
+    source = source_repo.find(source_id)
+    fixture_name = "agency_discovery" if body.get("kind") == "transcript" else "rfp_response" if body.get("kind") == "rfp_text" else None
+    fixture = _fixture(fixture_name) if fixture_name else None
+    if fixture:
+        for raw in fixture.get("requirements", []):
+            requirement = __import__("app.domain.schemas", fromlist=["Requirement"]).Requirement.model_validate(raw)
+            requirements = RequirementRepo(session)
+            if requirements.find(requirement.id) is None:
+                requirements.add_for_opportunity(opportunity.id, requirement)
+        if source is None and source_id:
+            raw = fixture["sourceRecords"][0]
+            from app.domain.schemas import SourceRecord
+
+            source = SourceRecord(
+                id=source_id, provider=raw["provider"], external_id=raw.get("externalId"),
+                title=raw["title"], uri=raw.get("uri"), retrieved_at=raw.get("capturedAt", clock),
+                content_hash=raw.get("contentHash", f"fixture-{source_id}"), excerpt=raw.get("excerpt"),
+                source_type=raw["sourceType"], approved_for_generation=True,
+            )
+            source_repo.add(source)
     discovery = __import__("app.domain.schemas", fromlist=["DiscoveryInput"]).DiscoveryInput(
         id=body.get("id") or new_id("discovery"),
         opportunity_id=opportunity.id,
         kind=body.get("kind", "notes"),
-        text=body.get("text") or (source.excerpt if source else ""),
+        text=body.get("text") or (fixture.get("discovery", {}).get("text") if fixture else None) or (source.excerpt if source else ""),
         source_record_id=source_id,
         extracted_at=clock,
     )
@@ -193,23 +222,29 @@ def extract_scope(
     except TransitionError as exc:
         return flags_response([flag("SCHEMA_ERROR", str(exc), [version_id])])
     requirements = RequirementRepo(session).list_for_opportunity(opportunity.id)
-    deliverables = [
-        {
-            "id": f"deliverable-{requirement.id}",
-            "name": requirement.text,
-            "description": requirement.text,
-            "quantity": 1,
-            "unit": "engagement",
-            "sourceRecordIds": requirement.source_record_ids,
-        }
-        for requirement in requirements
-        if requirement.status != "open_question"
-    ]
-    open_questions = [requirement.id for requirement in requirements if requirement.status == "open_question"]
-    scope = version.scope.model_copy(update={
-        "deliverables": deliverables,
-        "open_questions": open_questions,
-    })
+    fixture = _fixture("agency_discovery") if any(item.id.startswith("req_") for item in requirements) else _fixture("rfp_response") if any(item.id.startswith("rfp_req_") for item in requirements) else None
+    if fixture:
+        scope = Scope.model_validate(fixture["scope"])
+        open_questions = [requirement.id for requirement in requirements if requirement.status == "open_question"]
+        scope = scope.model_copy(update={"open_questions": open_questions})
+    else:
+        deliverables = [
+            {
+                "id": f"deliverable-{requirement.id}",
+                "name": requirement.text,
+                "description": requirement.text,
+                "quantity": 1,
+                "unit": "engagement",
+                "sourceRecordIds": requirement.source_record_ids,
+            }
+            for requirement in requirements
+            if requirement.status != "open_question"
+        ]
+        open_questions = [requirement.id for requirement in requirements if requirement.status == "open_question"]
+        scope = version.scope.model_copy(update={
+            "deliverables": deliverables,
+            "open_questions": open_questions,
+        })
     updated = version.model_copy(update={"scope": scope})
     VersionRepo(session).update(updated)
     _record(session, actor, clock, "edited", version_id)
@@ -228,6 +263,10 @@ def resolve_scope(
     if context is None:
         return not_found("proposal version", version_id)
     version, _, opportunity = context
+    try:
+        assert_mutable(version)
+    except TransitionError as exc:
+        return flags_response([flag("SCHEMA_ERROR", str(exc), [version_id])])
     try:
         assert_mutable(version)
     except TransitionError as exc:
@@ -259,6 +298,8 @@ def generate(
     if context is None:
         return not_found("proposal version", version_id)
     version, _, opportunity = context
+    if not version.source_record_ids and not opportunity.source_record_ids:
+        return flags_response([flag("MISSING_SOURCE", "a proposal cannot be generated without an approved source record", [version_id])])
     try:
         assert_mutable(version)
     except TransitionError as exc:
@@ -309,6 +350,10 @@ def validate(
     if context is None:
         return not_found("proposal version", version_id)
     version, _, opportunity = context
+    try:
+        assert_mutable(version)
+    except TransitionError as exc:
+        return flags_response([flag("SCHEMA_ERROR", str(exc), [version_id])])
     inputs = _validation_inputs(session, version, opportunity)
     sections, claims, evidence, rules, requirements, approvals, document_status = inputs
     flags = validate_version(
@@ -402,4 +447,4 @@ def copy_version(
     )
     VersionRepo(session).add(version)
     _record(session, actor, clock, "edited", version.id, after=version.id)
-    return {"proposal": dump(proposal), "version": dump(version)}
+    return {"proposal": dump(proposal), "version": dump(version), **dump(version)}

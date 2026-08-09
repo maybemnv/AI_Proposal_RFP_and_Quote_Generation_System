@@ -197,7 +197,23 @@ class FixtureGenerationAdapter:
     def generate(
         self, request: GenerateDraftRequest, *, now: str
     ) -> GenerateDraftResponse:
-        sections = [load_section_fixture(key) for key in request.requested_sections]
+        sections = []
+        for key in request.requested_sections:
+            if key == "rfp_answers" and request.requirements:
+                sections.append(SectionOutput(
+                    key=key,
+                    blocks=[BlockOutput(
+                        content=f"{requirement.text}. Response prepared from the approved source record.",
+                        claim_ids=(
+                            ["claim-onboarding-40"]
+                            if "relevant experience" in requirement.text.lower()
+                            else []
+                        ),
+                        source_record_ids=requirement.source_record_ids,
+                    ) for requirement in request.requirements],
+                ))
+            else:
+                sections.append(load_section_fixture(key))
         return _respond(request, sections, now)
 
 
