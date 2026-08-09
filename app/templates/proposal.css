@@ -1,0 +1,175 @@
+/* Print styles for the client-facing proposal.
+
+   Print-only, so there is no dark mode here: paper has one background. The
+   tokens are the PRD's light values, kept as variables rather than inlined so a
+   brand change is one block.
+
+   Rules that exist for the medium, not for taste:
+   - `print-color-adjust: exact` — without it Chromium drops every background,
+     and the evidence marks and status tints are the first thing to go.
+   - `break-inside: avoid` on rows and cards — a quote line split across a page
+     is how a total gets misread.
+   - `thead { display: table-header-group }` — the quote table repeats its
+     header when it spans pages. */
+
+:root {
+  --ink-950: #17212b;
+  --ink-700: #40505f;
+  --ink-500: #6f7d8a;
+  --paper: #fbfaf7;
+  --panel: #ffffff;
+  --line: #d9dedf;
+  --teal-700: #0f5d5e;
+  --teal-100: #dff2ef;
+  --amber-700: #9a5b00;
+  --amber-100: #fff0ce;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+}
+
+@page {
+  size: Letter;
+  margin: 18mm;
+}
+
+* {
+  box-sizing: border-box;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+body {
+  margin: 0;
+  background: var(--panel);
+  color: var(--ink-950);
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* Typography scale from the PRD: Display 32/38, H1 24/30, H2 18/24,
+   Body 15/22, Label 13/18, Caption 12/16. */
+h1 { font-size: 24px; line-height: 30px; margin: 0 0 8px; font-weight: 600; }
+h2 {
+  font-size: 18px;
+  line-height: 24px;
+  margin: 0 0 10px;
+  font-weight: 600;
+  color: var(--ink-950);
+}
+p { margin: 0 0 10px; }
+
+.cover {
+  padding: 40px 0 28px;
+  border-bottom: 2px solid var(--teal-700);
+  margin-bottom: 28px;
+}
+.cover .display {
+  font-size: 32px;
+  line-height: 38px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.cover .meta {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ink-700);
+}
+.cover .meta span + span::before {
+  content: "·";
+  margin: 0 8px;
+  color: var(--ink-500);
+}
+
+section {
+  margin-bottom: 24px;
+  break-inside: avoid-page;
+}
+
+.block { margin-bottom: 10px; }
+
+/* An evidence-backed sentence. The tint is what makes I1 legible on paper: a
+   reader can see which sentences carry a claim behind them. */
+.claim {
+  background: var(--teal-100);
+  border-bottom: 1px solid var(--teal-700);
+  padding: 0 2px;
+  border-radius: var(--radius-sm);
+}
+
+.evidence-note {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-700);
+  margin: 4px 0 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--teal-700);
+}
+
+ul { margin: 0 0 10px; padding-left: 18px; }
+li { margin-bottom: 4px; break-inside: avoid; }
+
+table.quote {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  line-height: 18px;
+}
+table.quote thead { display: table-header-group; }
+table.quote th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--ink-700);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 6px;
+}
+table.quote td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+table.quote tr { break-inside: avoid; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.optional-tag {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--amber-100);
+  color: var(--amber-700);
+}
+
+/* An unselected optional line is struck through *and* labelled — I4 has to be
+   visible without relying on the strike alone. */
+tr.unselected td { color: var(--ink-500); }
+tr.unselected .label-text { text-decoration: line-through; }
+
+tr.totals td {
+  border-bottom: none;
+  padding-top: 6px;
+}
+tr.total-row td {
+  font-size: 15px;
+  font-weight: 600;
+  border-top: 2px solid var(--ink-950);
+  padding-top: 10px;
+}
+
+.note {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-500);
+  margin-top: 8px;
+}
+
+.footer {
+  margin-top: 28px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-500);
+}

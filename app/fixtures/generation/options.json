@@ -1,0 +1,33 @@
+{
+  "key": "options",
+  "blocks": [
+    {
+      "blockId": "options-1",
+      "kind": "text",
+      "content": "The core engagement is the four-workshop programme, the findings pack, and the handover. That is the version we would recommend if you take nothing else, because it is the smallest piece of work that answers the question you asked. Everything below is optional and can be added now or after the programme closes.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "options-2",
+      "kind": "list",
+      "content": "Extended workshop series: two further sessions covering returns and account expansion\nEmbedded support: a consultant working alongside your onboarding team through the first live cycle\nMeasurement pack: a baseline and reporting view so the steering group can track cycle time after handover\nSupplier review: a short assessment of the third-party checks that sit inside onboarding",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual", "src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "options-3",
+      "kind": "text",
+      "content": "Embedded support is the add-on clients most often take, because it covers the period where a new process is easiest to abandon. The measurement pack is worth considering only if you do not already have a reliable cycle-time baseline, and discovery will tell us that.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual"]
+    },
+    {
+      "blockId": "options-4",
+      "kind": "text",
+      "content": "Each option is priced as a separate line so you can decide on it independently. Nothing in the core engagement depends on an option being taken, and options can be added mid-programme without reopening the core scope.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-rate-card-manual"]
+    }
+  ]
+}

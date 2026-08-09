@@ -1,0 +1,7 @@
+{
+  "code": "UNSUPPORTED",
+  "provider": "pandadoc",
+  "message": "Conditional pricing tables are not available on this plan; send the flattened quote instead.",
+  "retryable": false,
+  "externalRequestId": "req_pd_8e33d2"
+}

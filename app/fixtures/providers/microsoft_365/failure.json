@@ -1,0 +1,7 @@
+{
+  "code": "TEMPORARY",
+  "provider": "microsoft_365",
+  "message": "Graph API returned 429 with Retry-After: 30. The upload was not committed.",
+  "retryable": true,
+  "externalRequestId": "req_ms_71e2d9"
+}

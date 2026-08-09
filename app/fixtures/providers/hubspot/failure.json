@@ -1,0 +1,7 @@
+{
+  "code": "AUTH",
+  "provider": "hubspot",
+  "message": "OAuth token expired for portal 8814402. Reconnect HubSpot to continue.",
+  "retryable": false,
+  "externalRequestId": "req_hs_7f21c9"
+}

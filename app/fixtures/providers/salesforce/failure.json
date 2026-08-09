@@ -1,0 +1,7 @@
+{
+  "code": "RATE_LIMIT",
+  "provider": "salesforce",
+  "message": "REQUEST_LIMIT_EXCEEDED: daily API calls exhausted. Retry after 00:00 UTC.",
+  "retryable": true,
+  "externalRequestId": "req_sf_2d55b1"
+}

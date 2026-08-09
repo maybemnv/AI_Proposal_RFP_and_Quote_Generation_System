@@ -1,0 +1,26 @@
+{
+  "key": "payment_schedule",
+  "blocks": [
+    {
+      "blockId": "payment_schedule-1",
+      "kind": "text",
+      "content": "Payment is tied to milestone acceptance rather than to elapsed time. Each installment becomes due when the steering group accepts the milestone it relates to, which keeps the invoicing step aligned with the decision step you already run.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "payment_schedule-2",
+      "kind": "text",
+      "content": "The installment table attached to this document carries the amounts and the milestone each one matches. If the group accepts a milestone early or late, the installment moves with the acceptance date; the amount on each line stays as quoted.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-rate-card-manual"]
+    },
+    {
+      "blockId": "payment_schedule-3",
+      "kind": "text",
+      "content": "Invoices are issued in arrears, after the milestone is accepted, on the payment terms shown on the quote table. This schedule applies to the core engagement. Any optional add-on agreed later follows the same rule, with its own installment line.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-rate-card-manual", "src-crm-hs-9001-notes"]
+    }
+  ]
+}

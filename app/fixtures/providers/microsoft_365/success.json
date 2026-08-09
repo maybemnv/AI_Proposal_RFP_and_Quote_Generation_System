@@ -1,0 +1,21 @@
+{
+  "provider": "microsoft_365",
+  "externalFileId": "01BYE5RZ6QN3ZWBTUFOFD3GSPGOHDJD36K",
+  "documentId": "doc-meridian-v2",
+  "fileName": "Meridian Health — Claims Modernization v2.pdf",
+  "mimeType": "application/pdf",
+  "byteSize": 512944,
+  "storageUri": "sharepoint://sites/proposals/Shared%20Documents/meridian-v2.pdf",
+  "storedAt": "2026-08-06T10:11:00Z",
+  "sourceRecords": [
+    {
+      "id": "src-security-questionnaire",
+      "kind": "uploaded_file",
+      "provider": "microsoft_365",
+      "externalId": "01BYE5RZ6QN3ZWBTUFOFD3GSPGOHDJD36K",
+      "label": "Meridian security questionnaire responses.docx",
+      "capturedAt": "2026-08-01T09:15:00Z"
+    }
+  ],
+  "externalRequestId": "req_ms_4a9107"
+}

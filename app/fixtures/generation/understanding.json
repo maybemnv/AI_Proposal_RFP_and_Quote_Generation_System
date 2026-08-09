@@ -1,0 +1,33 @@
+{
+  "key": "understanding",
+  "blocks": [
+    {
+      "blockId": "understanding-1",
+      "kind": "text",
+      "content": "Onboarding a new customer at Northwind takes six weeks today, counted from contract signature to first full order. The discovery notes put most of that time in two places: waiting for account data to be checked, and waiting for a merchandising review that sits once a week. Neither step is complicated. Both sit in a queue.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "understanding-2",
+      "kind": "text",
+      "content": "Three teams touch the process and each keeps its own tracker. Because there is no single view, the account manager rebuilds status by hand before every customer call. That is the part your team feels most, even though it never shows up in the cycle time.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual", "src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "understanding-3",
+      "kind": "text",
+      "content": "The target you have set is three weeks. On what we have seen so far that looks reachable without new systems, provided the weekly review becomes a standing decision slot and the data checks run in parallel rather than one after the other. Testing that is the point of the workshops.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001", "src-notes-manual"]
+    },
+    {
+      "blockId": "understanding-4",
+      "kind": "text",
+      "content": "You also asked us to keep the change contained. The programme therefore works inside the teams and tools you already run, and treats any system change as a recommendation for you to schedule on your own timetable.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    }
+  ]
+}

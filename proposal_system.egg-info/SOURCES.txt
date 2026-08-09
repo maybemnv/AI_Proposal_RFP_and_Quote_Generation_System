@@ -1,0 +1,10 @@
+pyproject.toml
+app/__init__.py
+app/domain/__init__.py
+app/tests/__init__.py
+app/tests/test_money.py
+proposal_system.egg-info/PKG-INFO
+proposal_system.egg-info/SOURCES.txt
+proposal_system.egg-info/dependency_links.txt
+proposal_system.egg-info/requires.txt
+proposal_system.egg-info/top_level.txt

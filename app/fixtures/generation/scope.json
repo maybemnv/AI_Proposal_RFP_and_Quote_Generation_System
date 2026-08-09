@@ -1,0 +1,33 @@
+{
+  "key": "scope",
+  "blocks": [
+    {
+      "blockId": "scope-1",
+      "kind": "text",
+      "content": "The engagement covers four facilitated discovery workshops, a written findings pack, and a handover session with your onboarding team. Each workshop takes one working day and covers one stage of the current process. Findings from each session go to the steering group for acceptance at its next meeting.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "scope-2",
+      "kind": "list",
+      "content": "Four facilitated discovery workshops, one per onboarding stage\nA written record of what each session agreed and what stays open\nFindings pack covering current state, target state, and the gap between them\nA sequenced set of process changes your teams can pick up directly\nHandover session with the onboarding team and the steering group\nTwo review cycles on the findings pack before sign-off",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes", "src-notes-manual"]
+    },
+    {
+      "blockId": "scope-3",
+      "kind": "text",
+      "content": "The findings pack carries the reasoning as well as the recommendations. Anyone who was not in the room can see which observation led to which change, which matters when the work moves to teams that did not attend.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual"]
+    },
+    {
+      "blockId": "scope-4",
+      "kind": "text",
+      "content": "Anything not on the list above sits outside this engagement, including change management beyond the workshop series and any system configuration. Where something material comes up mid-programme we will raise it with you rather than absorb it quietly, so you can decide whether to add it.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes", "src-notes-manual"]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "provider": "manual",
+  "documentId": "doc-northwind-v1",
+  "fileName": "pasted-discovery-notes.txt",
+  "mimeType": "text/plain",
+  "byteSize": 4180,
+  "storageUri": "local://uploads/pasted-discovery-notes.txt",
+  "storedAt": "2026-08-01T09:20:00Z",
+  "sourceRecords": [
+    {
+      "id": "src-notes-manual",
+      "kind": "note",
+      "provider": "manual",
+      "externalId": null,
+      "label": "Discovery notes pasted by the proposal owner",
+      "capturedAt": "2026-08-01T09:20:00Z"
+    },
+    {
+      "id": "src-rate-card-manual",
+      "kind": "uploaded_file",
+      "provider": "manual",
+      "externalId": null,
+      "label": "FY26 rate card.xlsx",
+      "capturedAt": "2026-08-01T09:22:00Z"
+    }
+  ],
+  "externalRequestId": "req_mn_000001"
+}

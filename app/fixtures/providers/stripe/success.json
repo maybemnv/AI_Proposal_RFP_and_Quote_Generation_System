@@ -1,0 +1,10 @@
+{
+  "provider": "stripe",
+  "externalPaymentLinkId": "plink_3Xk9mQ2v",
+  "paymentUrl": "https://buy.stripe.example/3Xk9mQ2v",
+  "amountMinor": 9600000,
+  "currency": "USD",
+  "status": "active",
+  "expiresAt": "2026-09-01T00:00:00Z",
+  "externalRequestId": "req_st_6dd02e"
+}

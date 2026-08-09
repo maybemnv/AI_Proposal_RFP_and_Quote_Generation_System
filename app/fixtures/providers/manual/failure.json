@@ -1,0 +1,7 @@
+{
+  "code": "NOT_FOUND",
+  "provider": "manual",
+  "message": "The uploaded file is no longer on disk; re-upload it to restore the source record.",
+  "retryable": false,
+  "externalRequestId": "req_mn_000002"
+}

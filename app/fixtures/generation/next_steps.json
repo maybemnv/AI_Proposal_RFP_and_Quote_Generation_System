@@ -1,0 +1,33 @@
+{
+  "key": "next_steps",
+  "blocks": [
+    {
+      "blockId": "next_steps-1",
+      "kind": "text",
+      "content": "On signature we confirm the workshop dates against your steering group calendar and issue a short pre-read to the named participants. The pre-read lists what each session covers and what the two subject-matter experts should bring to it. Nothing else is required from your side in the first few days.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "next_steps-2",
+      "kind": "text",
+      "content": "In week one we set up data access and hold a half-day session with your named owner to walk the current trackers. That session is where we agree how to handle anything commercially sensitive that comes up in the workshops.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes", "src-notes-manual"]
+    },
+    {
+      "blockId": "next_steps-3",
+      "kind": "list",
+      "content": "Northwind confirms the steering group meeting dates for the programme window\nNorthwind names the two subject-matter experts per session and their cover\nNorthwind grants read access to onboarding data and current trackers\nWe issue the pre-read and the workshop pack\nWe run workshop one in week two and take the output to the following steering meeting",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes", "src-notes-manual"]
+    },
+    {
+      "blockId": "next_steps-4",
+      "kind": "text",
+      "content": "If it helps to start before the paperwork closes, we can hold the workshop dates for two weeks at no cost and release them if the engagement does not proceed. Tell us and we will put a provisional hold in place.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001"]
+    }
+  ]
+}

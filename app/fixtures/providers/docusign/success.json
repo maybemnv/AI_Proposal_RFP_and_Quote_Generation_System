@@ -1,0 +1,28 @@
+{
+  "provider": "docusign",
+  "externalDocumentId": "ds_env_77b190",
+  "documentId": "doc-meridian-v2",
+  "status": "sent",
+  "recipientEmail": "p.adeyemi@meridianhealth.example",
+  "sentAt": "2026-08-06T10:15:00Z",
+  "signingUrl": "https://demo.docusign.example/signing/ds_env_77b190",
+  "engagementEvents": [
+    {
+      "type": "sent",
+      "at": "2026-08-06T10:15:00Z",
+      "actor": "p.adeyemi@meridianhealth.example"
+    },
+    {
+      "type": "viewed",
+      "at": "2026-08-06T13:48:00Z",
+      "actor": "p.adeyemi@meridianhealth.example"
+    },
+    {
+      "type": "declined",
+      "at": "2026-08-07T08:30:00Z",
+      "actor": "p.adeyemi@meridianhealth.example",
+      "reason": "Procurement asked for net-45 payment terms before signature."
+    }
+  ],
+  "externalRequestId": "req_ds_1fa662"
+}

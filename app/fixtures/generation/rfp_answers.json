@@ -1,0 +1,33 @@
+{
+  "key": "rfp_answers",
+  "blocks": [
+    {
+      "blockId": "rfp_answers-1",
+      "kind": "text",
+      "content": "Team composition. The engagement is staffed with a lead consultant who facilitates all four workshops, a process analyst who builds the current-state and target-state maps, and a partner who attends the steering group and owns the commercial relationship. The lead consultant and the analyst stay on the engagement from first workshop to handover; we do not rotate staff mid-programme. Named biographies are available on request.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual"]
+    },
+    {
+      "blockId": "rfp_answers-2",
+      "kind": "text",
+      "content": "Data handling. We work from read-only access to the systems in scope and take copies only where a workshop requires them. Any client data we hold is kept in an access-controlled workspace for the engagement and returned or destroyed on your instruction at close, with written confirmation. We can work under your data processing agreement or ours, whichever you prefer.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual", "src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "rfp_answers-3",
+      "kind": "text",
+      "content": "Escalation path. Day-to-day questions go to the lead consultant, who responds within one working day. Anything the lead cannot resolve goes to the partner, and from there to the steering group at its next fortnightly meeting or sooner if the programme timeline is at stake. Escalations and their outcomes are recorded in the programme log so the trail is visible to both sides.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "rfp_answers-4",
+      "kind": "text",
+      "content": "References. We can put you in touch with the retail client described in the case studies section, and with one other client from a comparable onboarding programme. Both have agreed to take reference calls. We would ask that reference conversations happen at shortlist stage rather than earlier, out of respect for their time.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-case-northwind", "src-notes-manual"]
+    }
+  ]
+}

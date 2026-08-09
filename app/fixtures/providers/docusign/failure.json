@@ -1,0 +1,7 @@
+{
+  "code": "TEMPORARY",
+  "provider": "docusign",
+  "message": "Envelope service unavailable (503). The request was not accepted; retry is safe.",
+  "retryable": true,
+  "externalRequestId": "req_ds_5c0947"
+}
