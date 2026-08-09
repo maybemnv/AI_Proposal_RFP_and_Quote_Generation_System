@@ -2507,7 +2507,7 @@ git commit -m "feat: client proposal preview and content library with expiry han
 
 **Sent → viewed → signed** events map to the status palette: `sent` neutral, `viewed` good, `signed` good with a distinct icon, `declined` critical, `expired` warning. Each row carries the icon, the word, the timestamp, and the actor.
 
-- [ ] **Step 1: Write the failing API test**
+- [x] **Step 1: Write the failing API test**
 
 ```python
 def test_engagement_endpoint_returns_kpis_events_and_views(client, delivered_version_id):
@@ -2535,21 +2535,21 @@ def test_provider_events_never_mutate_a_locked_version(client, locked_version_id
                for e in client.get("/v1/analytics/engagement").json()["events"])
 ```
 
-- [ ] **Step 2: Run it to verify it fails**
+- [x] **Step 2: Run it to verify it fails**
 
 Run: `pytest app/tests/test_analytics_api.py -v`
 Expected: FAIL — the route does not exist.
 
-- [ ] **Step 3: Implement the endpoint**
+- [x] **Step 3: Implement the endpoint**
 
 Aggregate from `EngagementRecordRow` and `AuditEventRow`. The webhook handler appends an engagement record and writes an `engagement_received` audit event; it never touches the version row (I10).
 
-- [ ] **Step 4: Run it to verify it passes**
+- [x] **Step 4: Run it to verify it passes**
 
 Run: `pytest app/tests/test_analytics_api.py -v`
 Expected: PASS — 3 passed.
 
-- [ ] **Step 5: Write the failing UI test**
+- [x] **Step 5: Write the failing UI test**
 
 ```ts
 test("four KPI tiles render as figures, not charts", async ({ page }) => {
@@ -2607,21 +2607,21 @@ test("the chart has exactly one value axis", async ({ page }) => {
 });
 ```
 
-- [ ] **Step 6: Run it to verify it fails**
+- [x] **Step 6: Run it to verify it fails**
 
 Run: `npm run e2e -- e2e/analytics.spec.ts`
 Expected: FAIL — the route does not exist.
 
-- [ ] **Step 7: Implement the screen**
+- [x] **Step 7: Implement the screen**
 
 Build the bars as inline SVG `<rect rx="4">` anchored to the baseline, each inside a wider transparent `bar-hit` rect for hovering. Reuse `<StatTile>` from Task 14 for the KPIs and `formatMinor` for the pipeline value.
 
-- [ ] **Step 8: Run it to verify it passes**
+- [x] **Step 8: Run it to verify it passes**
 
 Run: `npm run e2e -- e2e/analytics.spec.ts`
 Expected: PASS — 8 passed.
 
-- [ ] **Step 9: Render it and look at it, in both modes**
+- [x] **Step 9: Render it and look at it, in both modes**
 
 ```bash
 npx playwright screenshot --viewport-size=1440,900 http://localhost:3000/analytics var/shots/analytics-light.png

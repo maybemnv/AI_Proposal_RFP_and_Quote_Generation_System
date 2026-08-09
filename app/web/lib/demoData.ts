@@ -126,6 +126,31 @@ export const contentClaims = [
   {id: "claim-expired-retention", text: "The previous programme retained 92% of users", status: "expired", validFrom: "2025-01-01", validUntil: "2026-07-15", allowed: "Historical analysis", prohibited: "New version client claims", evidenceCount: 1, sources: ["legacy-case-study.pdf#page=6"]},
 ];
 
+export type AnalyticsKpi = {key: string; label: string; value?: number; valueMinor?: number; unit: string};
+export type AnalyticsEvent = {id: string; type: string; actor: string; at: string; proposalId: string; documentId?: string};
+export type AnalyticsData = {kpis: AnalyticsKpi[]; events: AnalyticsEvent[]; viewsByDay: {day: string; count: number}[]};
+
+export const demoAnalytics: AnalyticsData = {
+  kpis: [
+    {key: "proposals_sent", label: "Proposals sent", value: 18, unit: "proposals"},
+    {key: "win_rate", label: "Win rate", value: 42, unit: "%"},
+    {key: "median_cycle_days", label: "Median cycle", value: 9.5, unit: "days"},
+    {key: "pipeline_value", label: "Pipeline value", valueMinor: 8640000, unit: "USD"},
+  ],
+  events: [
+    {id: "event-sent", type: "sent", actor: "PandaDoc", at: "2026-08-01T09:00:00Z", proposalId: "proposal_northwind", documentId: "doc-northwind"},
+    {id: "event-viewed", type: "viewed", actor: "PandaDoc", at: "2026-08-02T12:00:00Z", proposalId: "proposal_northwind", documentId: "doc-northwind"},
+    {id: "event-signed", type: "signed", actor: "PandaDoc", at: "2026-08-03T15:00:00Z", proposalId: "proposal_northwind", documentId: "doc-northwind"},
+    {id: "event-declined", type: "declined", actor: "PandaDoc", at: "2026-08-04T10:00:00Z", proposalId: "proposal_rfp_response", documentId: "doc-rfp"},
+    {id: "event-expired", type: "expired", actor: "PandaDoc", at: "2026-08-05T08:00:00Z", proposalId: "proposal_rfp_response", documentId: "doc-rfp"},
+  ],
+  viewsByDay: [
+    {day: "2026-08-01", count: 2}, {day: "2026-08-02", count: 4}, {day: "2026-08-03", count: 6},
+    {day: "2026-08-04", count: 3}, {day: "2026-08-05", count: 8}, {day: "2026-08-06", count: 5},
+    {day: "2026-08-07", count: 7},
+  ],
+};
+
 export const demoApprovals: DemoApproval[] = [
   {id: "approval-claim", kind: "claim", requiredRole: "content_editor", decision: "approved", reviewer: "Maya Chen", comment: "Evidence links checked."},
   {id: "approval-scope", kind: "scope", requiredRole: "content_editor", decision: "approved", reviewer: "Maya Chen", comment: "Scope is inside the brief."},
