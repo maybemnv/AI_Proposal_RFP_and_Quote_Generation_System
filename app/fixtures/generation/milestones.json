@@ -1,0 +1,33 @@
+{
+  "key": "milestones",
+  "blocks": [
+    {
+      "blockId": "milestones-1",
+      "kind": "text",
+      "content": "The programme runs in four milestones, one per workshop, with acceptance by the steering group at each point. Because the group meets fortnightly, each milestone closes at the meeting that follows its workshop. That cadence sets the overall shape of the timeline.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "milestones-2",
+      "kind": "table",
+      "content": "Milestone | What it covers | Accepted when\nM1 Current state | Workshop one maps onboarding as it runs today | Steering group accepts the current-state map\nM2 Constraints | Workshop two tests where the queues form and why | Steering group accepts the constraint list\nM3 Target state | Workshop three settles the process you want | Steering group accepts the target-state design\nM4 Handover | Workshop four sequences the changes and hands them over | Steering group accepts the findings pack",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes", "src-notes-manual"]
+    },
+    {
+      "blockId": "milestones-3",
+      "kind": "text",
+      "content": "A milestone is complete when the steering group accepts the output, not when the workshop finishes. If a session raises something the group needs longer to consider, the milestone stays open until the following meeting rather than closing on our say-so.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual"]
+    },
+    {
+      "blockId": "milestones-4",
+      "kind": "text",
+      "content": "The findings pack is drafted across the programme rather than written at the end. Each milestone adds its section, so the document your team picks up at handover is one they have already read in parts.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual"]
+    }
+  ]
+}

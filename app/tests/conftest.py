@@ -8,12 +8,19 @@ import pytest
 
 from app.domain.pricing import calculate_quote
 from app.domain.schemas import (
+    SECTION_KEYS,
     Approval,
+    ApprovedClaim,
     Assumption,
     Deliverable,
+    DiscoveryInput,
+    EvidenceLink,
+    GenerateDraftRequest,
     Milestone,
+    Opportunity,
     PricingRule,
     ProposalVersion,
+    Requirement,
     Scope,
 )
 from app.persistence.models import create_all
@@ -123,3 +130,110 @@ def approvals_one_pending() -> list[Approval]:
         _approval("ap-quote", "quote", "quote_approver", "approved"),
         _approval("ap-proposal", "proposal", "proposal_approver", "pending"),
     ]
+
+
+# --- generation -------------------------------------------------------------
+# The four claim ids below are the ones the section fixtures cite. Task 13 seeds
+# claims under these same ids; if the two ever drift, the generation tests fail
+# rather than the demo.
+
+CLAIM_IDS = (
+    "claim-onboarding-40",
+    "claim-time-to-value",
+    "claim-csat-uplift",
+    "claim-retention-2x",
+)
+
+CLAIM_TEXT = {
+    "claim-onboarding-40": "Cut onboarding time by 40% for a comparable mid-size retailer",
+    "claim-time-to-value": "Reduced time to first value from six weeks to three weeks",
+    "claim-csat-uplift": "Post-onboarding CSAT rose from 3.8 to 4.5",
+    "claim-retention-2x": "Achieved a 2x improvement in 90-day retention",
+}
+
+
+def _approved_claim(claim_id: str, status: str = "approved", **overrides) -> ApprovedClaim:
+    payload = {
+        "id": claim_id,
+        "text": CLAIM_TEXT[claim_id],
+        "status": status,
+        "source_record_ids": ["src-case-northwind"],
+        "valid_from": "2026-01-01T00:00:00Z",
+        "valid_until": "2027-01-01T00:00:00Z",
+        "allowed_contexts": ["executive_summary", "case_studies"],
+        "prohibited_contexts": [],
+        "evidence": [EvidenceLink(
+            claim_id=claim_id, source_record_id="src-case-northwind",
+            locator="page 2", excerpt=CLAIM_TEXT[claim_id],
+            verified_by="user-approver", verified_at=NOW,
+        )],
+    }
+    payload.update(overrides)
+    return ApprovedClaim(**payload)
+
+
+@pytest.fixture
+def northwind_opportunity() -> Opportunity:
+    return Opportunity(
+        id="opp-northwind", external_provider="hubspot", external_id="hs-9001",
+        account_name="Northwind Retail", contact_name="R. Ortega",
+        title="Customer onboarding acceleration", currency="USD", status="normalized",
+        source_record_ids=["src-crm-hs-9001"], required_field_errors=[],
+        imported_at="2026-08-01T09:00:00Z",
+    )
+
+
+def _draft_request(claims, sections, opportunity, scope) -> GenerateDraftRequest:
+    return GenerateDraftRequest(
+        proposal_version_id="ver-1",
+        opportunity=opportunity,
+        discovery=[DiscoveryInput(
+            id="disc-1", opportunity_id=opportunity.id, kind="notes",
+            text="Onboarding runs six weeks today. Target is three.",
+            source_record_id="src-crm-hs-9001-notes", extracted_at=NOW,
+        )],
+        requirements=[Requirement(
+            id="req-1", text="Complete four facilitated discovery workshops",
+            source_record_ids=["src-notes-manual"], status="confirmed",
+            confidence="high",
+        )],
+        scope=scope,
+        approved_claims=claims,
+        template_id="tmpl-consulting-v1",
+        requested_sections=list(sections),
+        model_provider="claude",
+        model_name="claude-opus-5",
+    )
+
+
+ALL_SECTIONS = SECTION_KEYS
+
+
+@pytest.fixture
+def draft_request(northwind_opportunity, sample_scope) -> GenerateDraftRequest:
+    return _draft_request(
+        [_approved_claim(c) for c in CLAIM_IDS],
+        ALL_SECTIONS, northwind_opportunity, sample_scope,
+    )
+
+
+@pytest.fixture
+def draft_request_with_pending_claim(
+    northwind_opportunity, sample_scope
+) -> GenerateDraftRequest:
+    """Every claim the fixtures cite is pending, so no assertion has a usable claim."""
+    return _draft_request(
+        [_approved_claim(c, status="pending_approval") for c in CLAIM_IDS],
+        ALL_SECTIONS, northwind_opportunity, sample_scope,
+    )
+
+
+@pytest.fixture
+def draft_request_with_expired_claim(
+    northwind_opportunity, sample_scope
+) -> GenerateDraftRequest:
+    """Approved, but the validity window closed before NOW — I7."""
+    return _draft_request(
+        [_approved_claim(c, valid_until="2026-02-01T00:00:00Z") for c in CLAIM_IDS],
+        ALL_SECTIONS, northwind_opportunity, sample_scope,
+    )

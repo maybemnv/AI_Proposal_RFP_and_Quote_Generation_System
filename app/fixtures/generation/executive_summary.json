@@ -1,0 +1,33 @@
+{
+  "key": "executive_summary",
+  "blocks": [
+    {
+      "blockId": "executive_summary-1",
+      "kind": "text",
+      "content": "Northwind Retail asked us to bring customer onboarding down from six weeks to three. This proposal sets out a four-workshop discovery programme, a written findings pack, and a handover to your onboarding team. The work runs against your fortnightly steering cadence so decisions land while the programme is still moving.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001"]
+    },
+    {
+      "blockId": "executive_summary-2",
+      "kind": "text",
+      "content": "Our approach starts with the process you have rather than a target operating model. Each workshop takes one onboarding stage, maps what happens today with the people who do it, and settles what should change. The steering group accepts findings as they emerge, so by the final session there is nothing left to sell internally.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes", "src-notes-manual"]
+    },
+    {
+      "blockId": "executive_summary-3",
+      "kind": "text",
+      "content": "We have run this shape of engagement before. At a comparable mid-size retailer the same programme reduced onboarding time by 40%, without new systems and inside the teams that already owned the work.",
+      "claimIds": ["claim-onboarding-40"],
+      "sourceRecordIds": ["src-case-northwind"]
+    },
+    {
+      "blockId": "executive_summary-4",
+      "kind": "text",
+      "content": "At that client the programme also reduced time-to-first-value from six weeks to three weeks, and post-onboarding CSAT increased from 3.8 to 4.5. We are not promising you the same numbers, but the constraints are close enough that the comparison is worth putting in front of you.",
+      "claimIds": ["claim-time-to-value", "claim-csat-uplift"],
+      "sourceRecordIds": ["src-case-northwind"]
+    }
+  ]
+}

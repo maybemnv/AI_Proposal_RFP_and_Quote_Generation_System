@@ -1,0 +1,33 @@
+{
+  "key": "assumptions",
+  "blocks": [
+    {
+      "blockId": "assumptions-1",
+      "kind": "text",
+      "content": "The estimate rests on a small number of assumptions about how the programme runs. They are listed here so that any change is visible early rather than at the point it affects the timeline. If one of them turns out not to hold, we will raise it with the steering group and set out the effect before anything moves.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "assumptions-2",
+      "kind": "list",
+      "content": "Northwind provides two subject-matter experts per workshop session, available for the full day\nThe steering group meets fortnightly and can accept findings at each meeting\nClient-side access to onboarding data and current trackers is granted before the first workshop\nWorkshops are held at a single Northwind site or over a single video bridge\nA named client owner is available to resolve scheduling and access questions within two working days\nReview comments on the findings pack come back consolidated, in one pass per cycle",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes", "src-notes-manual"]
+    },
+    {
+      "blockId": "assumptions-3",
+      "kind": "list",
+      "content": "Change management beyond the workshop series\nSystem configuration, integration work, and data migration\nTraining materials for teams outside the onboarding group\nOngoing programme management after handover\nAny work in territories outside those covered in discovery",
+      "claimIds": [],
+      "sourceRecordIds": ["src-crm-hs-9001-notes"]
+    },
+    {
+      "blockId": "assumptions-4",
+      "kind": "text",
+      "content": "The exclusions above are scope boundaries, not judgements about what you need. Several of them are sensible follow-on pieces of work, and the findings pack will say so where that is the case.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-notes-manual"]
+    }
+  ]
+}

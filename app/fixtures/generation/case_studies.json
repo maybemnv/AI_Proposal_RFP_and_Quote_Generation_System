@@ -1,0 +1,33 @@
+{
+  "key": "case_studies",
+  "blocks": [
+    {
+      "blockId": "case_studies-1",
+      "kind": "text",
+      "content": "The closest comparison to your situation is a mid-size retail client we worked with on the same problem: customer onboarding that took too long and depended on a handful of people knowing how to push it through. Their scale, product range, and customer base are all in the same range as Northwind's, which is why we are quoting the comparison at all.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-case-northwind"]
+    },
+    {
+      "blockId": "case_studies-2",
+      "kind": "text",
+      "content": "That client ran the same four-workshop shape, with the same fortnightly steering cadence and the same two-expert rule per session. The programme reduced onboarding time by 40% from its starting point, without new systems and without adding people to the onboarding team.",
+      "claimIds": ["claim-onboarding-40"],
+      "sourceRecordIds": ["src-case-northwind"]
+    },
+    {
+      "blockId": "case_studies-3",
+      "kind": "text",
+      "content": "The programme had a side effect the client had not asked for. With the queueing visible in one place, post-onboarding CSAT increased from 3.8 to 4.5, and 90-day retention showed a 2x improvement, mostly because customers were not waiting in silence between signature and first order.",
+      "claimIds": ["claim-csat-uplift", "claim-retention-2x"],
+      "sourceRecordIds": ["src-case-northwind"]
+    },
+    {
+      "blockId": "case_studies-4",
+      "kind": "text",
+      "content": "We hold the notes and measurements from that engagement and can share them under a short reference arrangement, with client names and figures outside the quote table removed. The reference contact is available by phone for a confidential conversation about how the programme ran.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-case-northwind", "src-crm-hs-9001-notes"]
+    }
+  ]
+}

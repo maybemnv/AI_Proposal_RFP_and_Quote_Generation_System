@@ -1,0 +1,26 @@
+{
+  "key": "pricing",
+  "blocks": [
+    {
+      "blockId": "pricing-1",
+      "kind": "text",
+      "content": "The fee is built from day rates applied to the quantity of each line of work, so the total tracks the scope in this document. The core engagement lines are firm. The optional add-ons in the options section are quoted separately and can be taken or left without changing the core total.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-rate-card-manual", "src-crm-hs-9001"]
+    },
+    {
+      "blockId": "pricing-2",
+      "kind": "text",
+      "content": "Figures sit in the quote table attached to this document, next to the line they refer to, rather than being repeated in the body of the proposal. That keeps the narrative and the numbers in step, and means a change to one line is visible where the lines are counted.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-rate-card-manual"]
+    },
+    {
+      "blockId": "pricing-3",
+      "kind": "text",
+      "content": "Rates are quoted in USD. No expenses are included in the fee; any travel or material cost would be agreed with you in writing before it is incurred. The quote is valid for the period stated on the quote table.",
+      "claimIds": [],
+      "sourceRecordIds": ["src-rate-card-manual", "src-crm-hs-9001"]
+    }
+  ]
+}
