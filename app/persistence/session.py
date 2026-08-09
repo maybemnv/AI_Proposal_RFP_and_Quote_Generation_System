@@ -8,6 +8,7 @@ commit and re-fetch them off a closed session.
 import os
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import Any
 
 from sqlalchemy import Engine, NullPool, create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -23,6 +24,19 @@ def _is_pooled(url: str) -> bool:
     return any(f":{port}/" in url for port in POOLER_PORTS)
 
 
+def engine_kwargs(url: str) -> dict[str, Any]:
+    """The engine options a given URL needs. Split out from ``get_engine`` so the
+    decision is directly testable — SQLAlchemy captures ``connect_args`` inside a
+    pool closure, where a test cannot see it."""
+    if not _is_pooled(url):
+        return {"future": True}
+    return {
+        "future": True,
+        "poolclass": NullPool,
+        "connect_args": {"prepare_threshold": None},
+    }
+
+
 def get_engine(url: str | None = None) -> Engine:
     """Resolve in order: explicit argument, DATABASE_URL, then the compose default.
 
@@ -35,14 +49,7 @@ def get_engine(url: str | None = None) -> Engine:
     pooler, which is what it is there for.
     """
     resolved = url or os.environ.get("DATABASE_URL") or DEFAULT_URL
-    if _is_pooled(resolved):
-        return create_engine(
-            resolved,
-            future=True,
-            poolclass=NullPool,
-            connect_args={"prepare_threshold": None},
-        )
-    return create_engine(resolved, future=True)
+    return create_engine(resolved, **engine_kwargs(resolved))
 
 
 @contextmanager
