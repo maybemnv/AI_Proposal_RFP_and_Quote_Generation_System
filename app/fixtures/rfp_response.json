@@ -1,0 +1,68 @@
+{
+  "sourceRecords": [
+    {
+      "id": "src-rfp-response",
+      "provider": "manual",
+      "externalId": "rfp-2026-17",
+      "title": "Public services digital experience RFP",
+      "sourceType": "rfp",
+      "excerpt": "Twelve numbered requirements for the response workbook.",
+      "capturedAt": "2026-08-01T09:20:00Z"
+    }
+  ],
+  "opportunity": {
+    "id": "opp_rfp_response",
+    "externalProvider": "manual",
+    "externalId": "rfp-2026-17",
+    "accountName": "Civic Services Authority",
+    "contactName": "Daniel Okafor",
+    "title": "Digital experience RFP response",
+    "currency": "USD",
+    "status": "normalized",
+    "sourceRecordIds": ["src-rfp-response"],
+    "requiredFieldErrors": [],
+    "importedAt": "2026-08-01T09:20:00Z"
+  },
+  "discovery": {
+    "id": "disc_rfp_response",
+    "opportunityId": "opp_rfp_response",
+    "kind": "rfp_text",
+    "text": "1. Describe the delivery approach. 2. Explain accessibility governance. 3. Provide the proposed team. 4. Describe relevant experience. 5. Explain the discovery method. 6. Describe the quality approach. 7. Explain data and security controls. 8. Provide the delivery timetable. 9. Describe training and handover. 10. Explain support after launch. 11. Provide the commercial model. 12. Describe how outcomes will be measured.",
+    "sourceRecordId": "src-rfp-response",
+    "extractedAt": "2026-08-01T09:20:00Z"
+  },
+  "requirements": [
+    {"id": "rfp_req_01", "text": "1. Describe the delivery approach", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_02", "text": "2. Explain accessibility governance", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_03", "text": "3. Provide the proposed team", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_04", "text": "4. Describe relevant experience", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_05", "text": "5. Explain the discovery method", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_06", "text": "6. Describe the quality approach", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_07", "text": "7. Explain data and security controls", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_08", "text": "8. Provide the delivery timetable", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_09", "text": "9. Describe training and handover", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_10", "text": "10. Explain support after launch", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_11", "text": "11. Provide the commercial model", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"},
+    {"id": "rfp_req_12", "text": "12. Describe how outcomes will be measured", "sourceRecordIds": ["src-rfp-response"], "status": "confirmed", "confidence": "high"}
+  ],
+  "scope": {
+    "deliverables": [
+      {"id": "rfp_del_01", "name": "1. Delivery approach response", "description": "A source-linked answer to the delivery approach requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_02", "name": "2. Accessibility governance response", "description": "A source-linked answer to the accessibility governance requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_03", "name": "3. Proposed team response", "description": "A source-linked answer to the proposed team requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_04", "name": "4. Relevant experience response", "description": "A source-linked answer to the relevant experience requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_05", "name": "5. Discovery method response", "description": "A source-linked answer to the discovery method requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_06", "name": "6. Quality approach response", "description": "A source-linked answer to the quality approach requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_07", "name": "7. Security controls response", "description": "A source-linked answer to the security controls requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_08", "name": "8. Delivery timetable response", "description": "A source-linked answer to the timetable requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_09", "name": "9. Training and handover response", "description": "A source-linked answer to the training requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_10", "name": "10. Post-launch support response", "description": "A source-linked answer to the support requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_11", "name": "11. Commercial model response", "description": "A source-linked answer to the commercial requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false},
+      {"id": "rfp_del_12", "name": "12. Outcomes measurement response", "description": "A source-linked answer to the outcomes requirement.", "quantity": 1, "unit": "answer", "milestoneIds": [], "sourceRecordIds": ["src-rfp-response"], "optional": false}
+    ],
+    "milestones": [],
+    "assumptions": [],
+    "exclusions": [],
+    "openQuestions": []
+  }
+}

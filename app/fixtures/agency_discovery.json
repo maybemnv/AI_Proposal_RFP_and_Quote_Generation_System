@@ -1,0 +1,82 @@
+{
+  "sourceRecords": [
+    {
+      "id": "src-agency-discovery",
+      "provider": "hubspot",
+      "externalId": "hs-northwind-agency",
+      "title": "Agency discovery transcript",
+      "sourceType": "discovery",
+      "excerpt": "Northwind wants a brand refresh and a site rebuild before the autumn launch window.",
+      "capturedAt": "2026-08-01T09:00:00Z"
+    },
+    {
+      "id": "src-agency-case",
+      "provider": "manual",
+      "externalId": null,
+      "title": "Approved agency case study library",
+      "sourceType": "content",
+      "excerpt": "Approved case study measurements and reference notes.",
+      "capturedAt": "2026-08-01T09:05:00Z"
+    },
+    {
+      "id": "src-agency-ratecard",
+      "provider": "manual",
+      "externalId": null,
+      "title": "FY26 agency rate card",
+      "sourceType": "manual",
+      "excerpt": "The 2026.1 USD pricing rules used by the demo.",
+      "capturedAt": "2026-08-01T09:10:00Z"
+    }
+  ],
+  "opportunity": {
+    "id": "opp_northwind",
+    "externalProvider": "hubspot",
+    "externalId": "hs-northwind-agency",
+    "accountName": "Northwind Retail Group",
+    "contactName": "Priya Shah",
+    "title": "Brand refresh and site rebuild",
+    "currency": "USD",
+    "status": "normalized",
+    "sourceRecordIds": ["src-agency-discovery"],
+    "requiredFieldErrors": [],
+    "importedAt": "2026-08-01T09:00:00Z"
+  },
+  "discovery": {
+    "id": "disc_northwind",
+    "opportunityId": "opp_northwind",
+    "kind": "transcript",
+    "text": "The Northwind team is preparing a brand refresh and a rebuild of its customer-facing site. The current site has grown through several campaigns and now makes the product range difficult to understand. The chief marketing officer wants a clearer proposition, a reusable visual system, and a site that the internal team can maintain after launch. The target is an autumn launch, with the first internal review in four weeks and a steering group every fortnight. The team can provide a product owner, a content lead, and two subject-matter experts for workshops. They need the agency to turn the discovery into a clear proposition, design the key journeys, produce a working component system, and support the delivery team through launch. The budget is expected to be between 1.2 and 1.8 million minor units, subject to the scope and the amount of legacy content that needs to move. Three things are non-negotiable: the navigation must work for the full product range, the new pages must meet the agreed accessibility target, and the marketing team must be able to publish without an engineer for routine changes. The team also wants a measurement plan that connects the new experience to qualified enquiries rather than page views alone. The programme should begin with a short alignment workshop, then move through proposition, design, build, content migration, and a launch readiness review. Northwind will supply brand history, analytics exports, product copy, and access to the existing CMS. The agency will document decisions and make the assumptions visible at every steering meeting. Northwind expects two review cycles for the proposition and two for the design system. They can accept a phased release if the legacy content inventory is larger than expected. The open point is whether the legacy CMS can expose the product metadata needed by the new site without a custom integration. The client wants that answered before build starts. If the answer changes the delivery shape, the steering group will choose whether to reduce the initial content set or fund the integration. The commercial owner asked for an option that includes training and one that leaves training to the internal team. The final handover should include a lightweight runbook, content governance guidance, and a recorded walkthrough for the marketing team. The agency should not take responsibility for ongoing campaign operations, paid media, or a full replatforming of unrelated back-office tools.",
+    "sourceRecordId": "src-agency-discovery",
+    "extractedAt": "2026-08-01T09:00:00Z"
+  },
+  "requirements": [
+    {"id": "req_brand_goals", "text": "Create a clear proposition for the refreshed brand and site", "sourceRecordIds": ["src-agency-discovery"], "status": "confirmed", "confidence": "high"},
+    {"id": "req_design_system", "text": "Deliver a reusable accessible visual and component system", "sourceRecordIds": ["src-agency-discovery"], "status": "confirmed", "confidence": "high"},
+    {"id": "req_site_build", "text": "Build the priority customer journeys and publishing workflow", "sourceRecordIds": ["src-agency-discovery"], "status": "confirmed", "confidence": "high"},
+    {"id": "req_launch_window", "text": "Support an autumn launch with fortnightly steering reviews", "sourceRecordIds": ["src-agency-discovery"], "status": "confirmed", "confidence": "high"},
+    {"id": "req_budget", "text": "Keep the initial engagement within the expected budget range", "sourceRecordIds": ["src-agency-discovery"], "status": "assumption", "confidence": "medium"},
+    {"id": "req_legacy_cms", "text": "Confirm whether the legacy CMS exposes product metadata for the new site", "sourceRecordIds": ["src-agency-discovery"], "status": "open_question", "confidence": "medium"}
+  ],
+  "scope": {
+    "deliverables": [
+      {"id": "del_proposition", "name": "Brand proposition and messaging system", "description": "A signed-off proposition, audience framing, and messaging hierarchy.", "quantity": 1, "unit": "pack", "milestoneIds": ["mile_alignment"], "sourceRecordIds": ["src-agency-discovery"], "optional": false},
+      {"id": "del_journeys", "name": "Priority journey design", "description": "Design for the priority customer journeys and responsive page patterns.", "quantity": 1, "unit": "set", "milestoneIds": ["mile_design"], "sourceRecordIds": ["src-agency-discovery"], "optional": false},
+      {"id": "del_component_system", "name": "Accessible component system", "description": "A documented component library and usage guidance for the delivery team.", "quantity": 1, "unit": "system", "milestoneIds": ["mile_design"], "sourceRecordIds": ["src-agency-discovery"], "optional": false},
+      {"id": "del_content_migration", "name": "Legacy content migration", "description": "Migration of the agreed initial content set into the new publishing workflow.", "quantity": 1, "unit": "workstream", "milestoneIds": ["mile_build"], "sourceRecordIds": ["src-agency-discovery"], "optional": true},
+      {"id": "del_training", "name": "Marketing team training", "description": "Recorded walkthrough and live training for routine publishing and governance.", "quantity": 1, "unit": "session", "milestoneIds": ["mile_launch"], "sourceRecordIds": ["src-agency-discovery"], "optional": true}
+    ],
+    "milestones": [
+      {"id": "mile_alignment", "name": "Alignment complete", "sequence": 1, "targetDescription": "Goals, audiences, measures, and constraints accepted by the steering group.", "sourceRecordIds": ["src-agency-discovery"]},
+      {"id": "mile_design", "name": "Design system accepted", "sequence": 2, "targetDescription": "Priority journeys and accessible component patterns accepted for build.", "sourceRecordIds": ["src-agency-discovery"]},
+      {"id": "mile_build", "name": "Priority build ready", "sequence": 3, "targetDescription": "Priority journeys and initial content set ready for launch review.", "sourceRecordIds": ["src-agency-discovery"]},
+      {"id": "mile_launch", "name": "Launch readiness", "sequence": 4, "targetDescription": "Runbook, governance, analytics, and handover accepted.", "sourceRecordIds": ["src-agency-discovery"]}
+    ],
+    "assumptions": [
+      {"id": "assump_access", "text": "Northwind provides two subject-matter experts for each workshop.", "sourceRecordIds": ["src-agency-discovery"], "customerConfirmationRequired": true},
+      {"id": "assump_content", "text": "Northwind supplies the approved product copy and analytics exports before build.", "sourceRecordIds": ["src-agency-discovery"], "customerConfirmationRequired": true},
+      {"id": "assump_reviews", "text": "The steering group returns decisions within five working days.", "sourceRecordIds": ["src-agency-discovery"], "customerConfirmationRequired": true}
+    ],
+    "exclusions": ["Paid media and ongoing campaign operations", "Replatforming unrelated back-office tools"],
+    "openQuestions": ["req_legacy_cms"]
+  }
+}

@@ -322,7 +322,9 @@ def validate(
         document_status=document_status,
         now=clock,
     )
-    VersionRepo(session).update(version.model_copy(update={"unresolved_flags": [item.code for item in flags]}))
+    VersionRepo(session).update(version.model_copy(update={
+        "unresolved_flags": [item.code for item in flags if item.severity == "blocking"],
+    }))
     _record(session, actor, clock, "validated", version_id)
     return {"flags": [dump(item) for item in flags]}
 
@@ -354,7 +356,9 @@ def submit(
     if not sections:
         flags.append(flag("SCHEMA_ERROR", "a proposal needs generated sections before submission", [version_id]))
     if blocking_flags(flags):
-        VersionRepo(session).update(version.model_copy(update={"unresolved_flags": [item.code for item in flags]}))
+        VersionRepo(session).update(version.model_copy(update={
+            "unresolved_flags": [item.code for item in flags if item.severity == "blocking"],
+        }))
         return flags_response(flags)
     try:
         VersionRepo(session).promote(version, "submitted")

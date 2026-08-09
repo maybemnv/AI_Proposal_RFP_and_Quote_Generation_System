@@ -1,0 +1,5 @@
+[
+  {"id": "user-content", "name": "Maya Chen", "role": "content_editor"},
+  {"id": "user-quote", "name": "Arjun Mehta", "role": "quote_approver"},
+  {"id": "user-proposal", "name": "Leah Morgan", "role": "proposal_approver"}
+]

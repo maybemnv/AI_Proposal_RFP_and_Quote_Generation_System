@@ -1938,7 +1938,7 @@ git commit -m "feat: FastAPI service exposing the nine workflow endpoints with g
 
 **Trace B fixture content (the RFP response):** an `rfp_text` `DiscoveryInput` with twelve numbered requirements, a `Requirement` per numbered item preserving RFP order, and answers mapped to approved claims. The demo point is ordered, source-linked answers, so the fixture must exercise `rfp_answers` generation.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```python
 def test_seed_produces_both_traces(session):
@@ -1974,12 +1974,12 @@ def test_seed_is_idempotent(session):
     assert a.version_ids == b.version_ids
 ```
 
-- [ ] **Step 2: Run it to verify it fails**
+- [x] **Step 2: Run it to verify it fails**
 
 Run: `pytest app/tests/test_seed.py -v`
 Expected: FAIL — `app.cli` does not exist.
 
-- [ ] **Step 3: Write the fixtures and the CLI**
+- [x] **Step 3: Write the fixtures and the CLI**
 
 `app/cli.py`:
 
@@ -2012,12 +2012,12 @@ if __name__ == "__main__":
 
 Fixture ids are stable strings (`opp_northwind`, `claim_onboarding_40`, `rule_strategy_day`) rather than random UUIDs, which is what makes `seed` idempotent and the fixtures readable when demoing the audit trail.
 
-- [ ] **Step 4: Run it to verify it passes**
+- [x] **Step 4: Run it to verify it passes**
 
 Run: `pytest app/tests/test_seed.py -v`
 Expected: PASS — 5 passed.
 
-- [ ] **Step 5: Run the demo end to end**
+- [x] **Step 5: Run the demo end to end**
 
 ```bash
 docker compose up -d db

@@ -1,0 +1,17 @@
+{
+  "discountPolicy": {
+    "id": "policy_standard",
+    "version": "2026.1",
+    "maxPercentWithoutApproval": 10,
+    "maxMinorWithoutApproval": 250000,
+    "requiresQuoteApprovalAbove": 5000000
+  },
+  "rules": [
+    {"id": "rule_strategy_day", "version": "2026.1", "label": "Strategy day", "unit": "day", "currency": "USD", "unitPriceMinor": 120000, "minQuantity": 1, "maxQuantity": 60, "optional": false, "activeFrom": "2026-01-01", "activeUntil": null, "discountPolicyId": "policy_standard", "sourceRecordIds": ["src-agency-ratecard"]},
+    {"id": "rule_design_sprint", "version": "2026.1", "label": "Design sprint", "unit": "sprint", "currency": "USD", "unitPriceMinor": 300000, "minQuantity": 1, "maxQuantity": 8, "optional": false, "activeFrom": "2026-01-01", "activeUntil": null, "discountPolicyId": "policy_standard", "sourceRecordIds": ["src-agency-ratecard"]},
+    {"id": "rule_build_week", "version": "2026.1", "label": "Build week", "unit": "week", "currency": "USD", "unitPriceMinor": 450000, "minQuantity": 1, "maxQuantity": 24, "optional": false, "activeFrom": "2026-01-01", "activeUntil": null, "discountPolicyId": "policy_standard", "sourceRecordIds": ["src-agency-ratecard"]},
+    {"id": "rule_content_migration", "version": "2026.1", "label": "Content migration", "unit": "workstream", "currency": "USD", "unitPriceMinor": 180000, "minQuantity": 1, "maxQuantity": 20, "optional": true, "activeFrom": "2026-01-01", "activeUntil": null, "discountPolicyId": "policy_standard", "sourceRecordIds": ["src-agency-ratecard"]},
+    {"id": "rule_training", "version": "2026.1", "label": "Training session", "unit": "session", "currency": "USD", "unitPriceMinor": 150000, "minQuantity": 1, "maxQuantity": 10, "optional": true, "activeFrom": "2026-01-01", "activeUntil": null, "discountPolicyId": "policy_standard", "sourceRecordIds": ["src-agency-ratecard"]},
+    {"id": "rule_retainer", "version": "2026.1", "label": "Launch retainer", "unit": "month", "currency": "USD", "unitPriceMinor": 250000, "minQuantity": 1, "maxQuantity": 12, "optional": false, "activeFrom": "2026-01-01", "activeUntil": null, "discountPolicyId": "policy_standard", "sourceRecordIds": ["src-agency-ratecard"]}
+  ]
+}
