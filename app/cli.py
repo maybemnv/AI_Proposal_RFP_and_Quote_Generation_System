@@ -209,7 +209,7 @@ def demo():
 
         quoted = client.post(
             f"/v1/proposal-versions/{version_id}/quote/calculate",
-            json={"currency": "USD", "discountMinor": 0, "taxMinor": 0, "lines": [{"id": "line_strategy", "label": "Strategy days", "ruleId": "rule_strategy_day", "quantity": "4", "optional": False, "selected": True, "sourceRecordIds": ["src-agency-ratecard"]}], "installments": [{"sequence": 1, "label": "Deposit", "amountMinor": 240000, "dueDescription": "On signature"}, {"sequence": 2, "label": "Final", "amountMinor": 240000, "dueDescription": "On delivery"}]},
+            json={"currency": "USD", "discountMinor": 0, "taxMinor": 0, "lines": [{"id": "line_strategy", "label": "Strategy days", "ruleId": "rule_strategy_day", "quantity": "4", "optional": False, "selected": True, "sourceRecordIds": ["src-agency-ratecard"]}, {"id": "line_training", "label": "Training session", "ruleId": "rule_training", "quantity": "1", "optional": True, "selected": False, "sourceRecordIds": ["src-agency-ratecard"]}], "installments": [{"sequence": 1, "label": "Deposit", "amountMinor": 240000, "dueDescription": "On signature"}, {"sequence": 2, "label": "Final", "amountMinor": 240000, "dueDescription": "On delivery"}]},
         )
         if quoted.status_code != 200:
             raise typer.BadParameter(quoted.text)

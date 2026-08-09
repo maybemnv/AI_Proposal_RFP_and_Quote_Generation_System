@@ -2400,7 +2400,7 @@ git commit -m "feat: pricing configurator and approval screens with server-compu
 
 **Content library** (`/content`): claims table with status, validity window, allowed and prohibited contexts, evidence count, and source links. `<ExpiryBadge>` marks claims expiring within 30 days. An approve action moves `pending_approval → approved`, and an expired claim shows that it cannot be used in a new version (I7).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 // e2e/preview.spec.ts
@@ -2453,21 +2453,21 @@ test("every claim shows its evidence count and sources", async ({ page }) => {
 });
 ```
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `npm run e2e -- e2e/preview.spec.ts e2e/content.spec.ts`
 Expected: FAIL — routes do not exist.
 
-- [ ] **Step 3: Implement both screens**
+- [x] **Step 3: Implement both screens**
 
 `<ProposalDocument>` shares its section ordering constant with the Jinja2 template by reading the same ordered key list, so the preview and the PDF cannot drift.
 
-- [ ] **Step 4: Run them to verify they pass**
+- [x] **Step 4: Run them to verify they pass**
 
 Run: `npm run e2e -- e2e/preview.spec.ts e2e/content.spec.ts`
 Expected: PASS — 6 passed.
 
-- [ ] **Step 5: Compare the preview against the PDF**
+- [x] **Step 5: Compare the preview against the PDF**
 
 Render the PDF for the same version and put the two side by side. Section order, figures, and optional labelling must match. Fix drift before committing.
 

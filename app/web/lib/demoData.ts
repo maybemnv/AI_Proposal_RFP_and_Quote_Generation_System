@@ -81,8 +81,7 @@ export const demoScope = {
 };
 
 const quoteCatalog = [
-  {id: "line-strategy", label: "Strategy day", ruleId: "rule_strategy_day", ruleVersion: "2026.1", quantity: 2, unit: "day", unitPriceMinor: 120000, optional: false},
-  {id: "line-design", label: "Design sprint", ruleId: "rule_design_sprint", ruleVersion: "2026.1", quantity: 1, unit: "sprint", unitPriceMinor: 300000, optional: false},
+  {id: "line-strategy", label: "Strategy days", ruleId: "rule_strategy_day", ruleVersion: "2026.1", quantity: 4, unit: "day", unitPriceMinor: 120000, optional: false},
   {id: "line-optional-training", label: "Training session", ruleId: "rule_training", ruleVersion: "2026.1", quantity: 1, unit: "session", unitPriceMinor: 150000, optional: true},
 ];
 
@@ -115,6 +114,17 @@ export function calculateDemoQuote(
 }
 
 export const demoQuote = calculateDemoQuote();
+
+export const previewSectionOrder = [
+  "Executive summary", "Understanding", "Scope", "Milestones", "Assumptions",
+  "Options", "Pricing", "Payment schedule", "Case studies", "Next steps",
+] as const;
+
+export const contentClaims = [
+  {id: "claim-pending-csat", text: "A governed content system improves review consistency", status: "pending_approval", validFrom: "2026-07-01", validUntil: "2026-11-30", allowed: "Governance proposals", prohibited: "Quantified performance promises", evidenceCount: 2, sources: ["research-notes.md#L44"]},
+  {id: "claim-onboarding-40", text: "Cut onboarding time by 40% for a comparable mid-size retailer", status: "approved", validFrom: "2026-01-01", validUntil: "2026-12-31", allowed: "Retail onboarding proposals", prohibited: "Unrelated sectors", evidenceCount: 1, sources: ["case-study.pdf#page=2"]},
+  {id: "claim-expired-retention", text: "The previous programme retained 92% of users", status: "expired", validFrom: "2025-01-01", validUntil: "2026-07-15", allowed: "Historical analysis", prohibited: "New version client claims", evidenceCount: 1, sources: ["legacy-case-study.pdf#page=6"]},
+];
 
 export const demoApprovals: DemoApproval[] = [
   {id: "approval-claim", kind: "claim", requiredRole: "content_editor", decision: "approved", reviewer: "Maya Chen", comment: "Evidence links checked."},
