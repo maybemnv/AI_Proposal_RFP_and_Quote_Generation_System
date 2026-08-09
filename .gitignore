@@ -6,3 +6,4 @@ var/
 node_modules/
 .next/
 test-results/
+.pytest_cache/
