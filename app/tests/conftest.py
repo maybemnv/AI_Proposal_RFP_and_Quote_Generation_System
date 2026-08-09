@@ -16,8 +16,19 @@ from app.domain.schemas import (
     ProposalVersion,
     Scope,
 )
+from app.persistence.models import create_all
+from app.persistence.session import get_engine
 
 NOW = "2026-08-01T10:00:00Z"
+
+
+@pytest.fixture
+def engine():
+    """In-memory SQLite. Fast, and disposable per test."""
+    eng = get_engine("sqlite+pysqlite:///:memory:")
+    create_all(eng)
+    return eng
+
 
 
 @pytest.fixture

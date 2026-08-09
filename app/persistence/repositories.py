@@ -16,6 +16,7 @@ from sqlalchemy import select
 
 from app.domain.schemas import (
     Approval,
+    AuditEvent,
     CamelModel,
     Claim,
     DiscountPolicy,
@@ -37,6 +38,7 @@ from app.domain.schemas import (
 from app.domain.workflow import assert_mutable, assert_transition, content_hash
 from app.persistence.models import (
     ApprovalRow,
+    AuditEventRow,
     Base,
     ClaimRow,
     DiscountPolicyRow,
@@ -144,6 +146,49 @@ class EngagementRepo(Repo):
             .order_by(EngagementRecordRow.at)
         )
         return [self._to_model(row) for row in self.s.scalars(stmt)]
+
+
+class AuditRepo(Repo):
+    """Read and append only. ``update`` and ``delete`` exist solely to refuse."""
+
+    model, row = AuditEvent, AuditEventRow
+
+    def _to_model(self, row: AuditEventRow) -> AuditEvent:
+        return AuditEvent(
+            id=row.id,
+            workspace_id=row.workspace_id,
+            actor_type=row.actor_type,
+            actor_id=row.actor_id,
+            action=row.action,
+            entity_type=row.entity_type,
+            entity_id=row.entity_id,
+            before_hash=row.before_hash,
+            after_hash=row.after_hash,
+            metadata=row.event_metadata,
+            created_at=row.created_at,
+        )
+
+    def _ordered(self, *conditions) -> list[AuditEvent]:
+        stmt = select(AuditEventRow).order_by(AuditEventRow.created_at, AuditEventRow.id)
+        for condition in conditions:
+            stmt = stmt.where(condition)
+        return [self._to_model(row) for row in self.s.scalars(stmt)]
+
+    def list_for(self, entity_id: str) -> list[AuditEvent]:
+        return self._ordered(AuditEventRow.entity_id == entity_id)
+
+    def list_for_workspace(self, workspace_id: str) -> list[AuditEvent]:
+        return self._ordered(AuditEventRow.workspace_id == workspace_id)
+
+    def add(self, obj: AuditEvent) -> None:
+        raise NotImplementedError(
+            "audit log is append-only: use app.domain.audit.record_event")
+
+    def update(self, obj: AuditEvent) -> None:
+        raise NotImplementedError("audit log is append-only: events cannot be updated")
+
+    def delete(self, entity_id: str) -> None:
+        raise NotImplementedError("audit log is append-only: events cannot be deleted")
 
 
 class RequirementRepo(Repo):

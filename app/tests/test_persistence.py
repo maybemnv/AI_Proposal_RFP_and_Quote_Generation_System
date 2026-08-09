@@ -1,7 +1,7 @@
 import pytest
 
 from app.domain.workflow import TransitionError, content_hash
-from app.persistence.models import Base, ProposalVersionRow, create_all
+from app.persistence.models import Base, ProposalVersionRow
 from app.persistence.repositories import (
     ApprovalRepo,
     ClaimRepo,
@@ -9,14 +9,7 @@ from app.persistence.repositories import (
     PricingRuleRepo,
     VersionRepo,
 )
-from app.persistence.session import get_engine, session_scope
-
-
-@pytest.fixture
-def engine():
-    eng = get_engine("sqlite+pysqlite:///:memory:")
-    create_all(eng)
-    return eng
+from app.persistence.session import session_scope
 
 
 def test_version_roundtrips_through_the_database(engine, working_version):
