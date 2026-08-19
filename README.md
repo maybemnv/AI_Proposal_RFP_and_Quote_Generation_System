@@ -4,30 +4,52 @@ This repository is a deterministic prototype for turning CRM/RFP source material
 
 The default demo mode is fixture-backed. It needs no provider credentials and keeps the same contracts used by live generation and provider adapters.
 
-## Quick start
+## Fixture showcase quick start
 
-```bash
+The supported showcase runs entirely from deterministic fixtures: no Docker, paid
+credentials, or live provider accounts are required. Copy `.env.example` to
+`.env`, then install the project and browser dependencies.
+
+```powershell
 python -m pip install -e ".[dev]"
-python -m app.cli reset
-python -m app.cli demo
+python -m playwright install chromium
+cd app/web
+npm ci
+cd ../..
 ```
 
-The demo prints the ten workflow gates and writes the rendered PDF below `var/storage/`.
+Reset the local fixture database before the demo:
 
-To run the API and web shell:
+```powershell
+python -m app.cli reset
+```
 
-```bash
-uvicorn app.api.main:app --reload
+Start the API and web shell in two PowerShell terminals from the repository root.
+
+```powershell
+# Terminal 1
+$env:DATABASE_URL = "sqlite+pysqlite:///var/showcase.db"
+$env:STORAGE_DIR = "var/documents"
+uvicorn app.api.main:app --port 8106
+
+# Terminal 2
 cd app/web
-npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The API defaults to the `DATABASE_URL` in `.env`; copy `.env.example` first when using Docker Postgres. The standalone web prototype also has deterministic fixture fallbacks for portfolio screens.
+Open `http://localhost:3106`. Confirm the fixture is ready before presenting it:
+
+```powershell
+Invoke-RestMethod http://localhost:8106/health
+# expected: @{status=running; ready=True}
+```
+
+The API returns HTTP 503 with `ready: false` when the fixture database is missing
+or unseeded. The rendered PDF is stored locally under `var/documents/`.
 
 ## Verification
 
-```bash
+```powershell
 python -m pytest -q
 ruff check app/
 cd app/web
@@ -35,7 +57,10 @@ npm run build
 npm run e2e
 ```
 
-The browser suite covers capture, evidence, scope, pricing, approvals, preview/PDF download, content expiry, analytics, and the Trace A smoke path.
+The browser suite owns a clean SQLite fixture lifecycle, checks the downloaded
+artifact begins with `%PDF`, and includes desktop and narrow-mobile Trace A
+coverage. `python -m app.cli demo` is also available as a terminal fallback and
+writes a fixture PDF under `var/storage/`.
 
 ## Workflow screens
 
@@ -52,4 +77,8 @@ See [`docs/DEMO_RUNBOOK.md`](docs/DEMO_RUNBOOK.md) for the click-by-click pitch 
 
 ## Scope boundaries
 
-Fixture mode is intentionally the reliable demo path. Auth, tenant provisioning, migrations, live provider credentials, multi-currency, and production deployment are outside this prototype.
+Fixture mode is intentionally the reliable demo path. Live generation remains
+optional and unverified: use `GENERATION_MODE=claude` and set
+`ANTHROPIC_API_KEY` only in a local, uncommitted `.env`. Auth, tenant
+provisioning, migrations, live provider credentials, multi-currency, and
+production deployment are outside this prototype.
