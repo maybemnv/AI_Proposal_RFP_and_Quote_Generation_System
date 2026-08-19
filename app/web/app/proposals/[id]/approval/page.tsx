@@ -25,11 +25,27 @@ export default function ApprovalPage({params}: PageProps) {
   const versionId = versionIdForRoute(id);
 
   useEffect(() => {
-    api.get<any>(`/v1/proposal-versions/${versionId}`).then((response) => {
-      if (response.approvals?.length) setApprovals(response.approvals);
-      if (response.status === "locked" || response.status === "rendered" || response.status === "delivered") setLocked(true);
+    let active = true;
+    api.get<any>(`/v1/proposal-versions/${versionId}`).then(async (response) => {
+      if (["locked", "rendered", "delivered"].includes(response.status)) setLocked(true);
       if (response.unresolvedFlags?.length) setFlags(response.unresolvedFlags.map((code: string) => ({code, severity: "blocking" as const, message: code})));
-    }).catch(() => setFlags([{code: "API_UNAVAILABLE", severity: "blocking", message: "Fixture API unavailable; approvals cannot be changed."}]));
+      let approvals = response.approvals ?? [];
+      if (!approvals.length && !["locked", "rendered", "delivered"].includes(response.status)) {
+        try {
+          const submitted = await api.post<any>(`/v1/proposal-versions/${versionId}/submit`, {});
+          approvals = submitted.approvals ?? [];
+          setFlags([]);
+        } catch (error) {
+          if (error instanceof ApiError && error.flags.length) setFlags(error.flags);
+        }
+      }
+      if (active) setApprovals(approvals);
+    }).catch(() => {
+      if (active) setFlags((current) => current.some((flag) => flag.code === "API_UNAVAILABLE")
+        ? current
+        : [...current, {code: "API_UNAVAILABLE", severity: "blocking", message: "Fixture API unavailable; approvals cannot be changed."}]);
+    });
+    return () => { active = false; };
   }, [versionId]);
 
   const pending = useMemo(() => approvals.filter((item) => item.decision === "pending"), [approvals]);

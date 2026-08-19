@@ -21,17 +21,23 @@ export default function PreviewPage({params}: PageProps) {
 
   const downloadPdf = async () => {
     try {
-      const response = await api.post<any>(`/v1/proposal-versions/${versionIdForRoute(id)}/render`, {});
-      if (response.document?.id) {
-        const link = document.createElement("a");
-        link.href = api.url(`/v1/documents/${response.document.id}/download`);
-        link.download = `${id}-proposal.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        setStatus("downloaded");
-        return;
+      const version = await api.get<any>(`/v1/proposal-versions/${versionIdForRoute(id)}`);
+      let documentId = version.document?.status === "ready" ? version.document.id : null;
+      if (!documentId) {
+        const response = await api.post<any>(`/v1/proposal-versions/${versionIdForRoute(id)}/render`, {});
+        if (response.status === "failed" || response.document?.status !== "ready") {
+          setFlags(response.flags?.length ? response.flags : [{code: "RENDER_ERROR", severity: "blocking", message: "The fixture API could not render this proposal."}]);
+          return;
+        }
+        documentId = response.document.id;
       }
+      const link = document.createElement("a");
+      link.href = api.url(`/v1/documents/${documentId}/download`);
+      link.download = `${id}-proposal.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setStatus("downloaded");
     } catch (error) {
       setFlags(error instanceof ApiError && error.flags.length ? error.flags : [{code: "API_UNAVAILABLE", severity: "blocking", message: "The fixture API could not render this proposal."}]);
     }
