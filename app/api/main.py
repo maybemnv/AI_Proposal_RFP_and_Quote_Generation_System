@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.routes import analytics, approvals, documents, opportunities, proposals, quotes
+from app.persistence.models import Base, create_all
 from app.persistence.repositories import OpportunityRepo
 from app.persistence.session import get_engine, session_scope
 
@@ -17,7 +18,7 @@ def create_app(engine=None) -> FastAPI:
     application.state.engine = engine
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000"],
+        allow_origins=["http://localhost:3106"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -55,6 +56,19 @@ def create_app(engine=None) -> FastAPI:
                 },
             )
         return {"status": "running", "ready": True}
+
+    @application.post("/v1/fixture/reset")
+    def reset_fixture(request: Request):
+        """Replace only local fixture data so browser tests own their lifecycle."""
+        from app.cli import seed_all
+
+        active_engine = request.app.state.engine or get_engine()
+        request.app.state.engine = active_engine
+        Base.metadata.drop_all(active_engine)
+        create_all(active_engine)
+        with session_scope(active_engine) as session:
+            result = seed_all(session)
+        return {"status": "reset", "proposalVersions": len(result.version_ids)}
 
     return application
 

@@ -1,4 +1,4 @@
-import {expect, test} from "@playwright/test";
+import {expect, test} from "./fixture";
 
 test("four KPI tiles render as figures, not charts", async ({page}) => {
   await page.goto("/analytics");

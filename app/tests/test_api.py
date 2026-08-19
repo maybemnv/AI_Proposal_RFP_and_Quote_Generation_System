@@ -188,6 +188,14 @@ def test_health_reports_ready_when_fixture_data_is_seeded(client, api_engine):
     assert response.json() == {"status": "running", "ready": True}
 
 
+def test_fixture_reset_seeds_the_running_api_database(client):
+    response = client.post("/v1/fixture/reset")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "reset", "proposalVersions": 2}
+    assert client.get("/health").json() == {"status": "running", "ready": True}
+
+
 # --- The nine PRD endpoints ------------------------------------------------
 
 
@@ -235,6 +243,25 @@ def test_generate_then_calculate_then_validate_is_clean(client, api_engine):
     response = client.post(f"/v1/proposal-versions/{version_id}/validate")
     assert response.status_code == 200, response.text
     assert [f for f in response.json()["flags"] if f["severity"] == "blocking"] == []
+
+
+def test_quote_rejects_a_discount_that_would_make_the_total_negative(client, api_engine):
+    _seed(api_engine)
+    version_id = _new_version(client)
+    body = {
+        key: value for key, value in QUOTE_BODY.items()
+        if key != "installments"
+    } | {"discountMinor": 900000}
+
+    response = client.post(f"/v1/proposal-versions/{version_id}/quote/calculate", json=body)
+
+    assert response.status_code == 409
+    assert response.json()["flags"] == [{
+        "code": "PRICE_MISMATCH",
+        "severity": "blocking",
+        "message": "negative total is rejected (I3)",
+        "relatedIds": [version_id],
+    }]
 
 
 def test_submit_is_refused_while_a_blocking_flag_is_open(client, api_engine):

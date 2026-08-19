@@ -26,20 +26,20 @@ export default function ScopePage({params}: PageProps) {
         setScope(response.scope);
         if (response.scope.openQuestions?.length && !resolvedRef.current) setQuestion(response.scope.openQuestions[0]);
       }
-    }).catch(() => undefined);
+    }).catch(() => setFlags([{code: "API_UNAVAILABLE", severity: "blocking", message: "Fixture API unavailable; displayed scope is read-only."}]));
   }, [id]);
 
   async function resolveQuestion() {
     if (!question) return;
     const selectedQuestion = question;
     setFlags([]);
-    resolvedRef.current = true;
-    setScope((current: any) => ({...current, openQuestions: []}));
-    setQuestion(null); setResolved(true); setShowResolver(false); setResolution("");
     try {
-      await api.post(`/v1/proposal-versions/${versionIdForRoute(id)}/scope/resolve`, {openQuestion: selectedQuestion, resolution});
+      const response = await api.post<any>(`/v1/proposal-versions/${versionIdForRoute(id)}/scope/resolve`, {openQuestion: selectedQuestion, resolution});
+      resolvedRef.current = true;
+      setScope(response);
+      setQuestion(null); setResolved(true); setShowResolver(false); setResolution("");
     } catch (error) {
-      if (error instanceof ApiError) setFlags(error.flags);
+      setFlags(error instanceof ApiError && error.flags.length ? error.flags : [{code: "API_UNAVAILABLE", severity: "blocking", message: "The fixture API could not save this resolution."}]);
     }
   }
 
