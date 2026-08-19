@@ -1,6 +1,8 @@
 """FastAPI application factory."""
 
-from fastapi import FastAPI, Request
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,6 +11,18 @@ from app.api.routes import analytics, approvals, documents, opportunities, propo
 from app.persistence.models import Base, create_all
 from app.persistence.repositories import OpportunityRepo
 from app.persistence.session import get_engine, session_scope
+
+FIXTURE_DATABASE_PATH = Path(__file__).resolve().parents[2] / "var" / "showcase.db"
+
+
+def _is_safe_fixture_reset_engine(engine) -> bool:
+    """Only permit the disposable demo file or injected in-memory test engines."""
+    if engine.dialect.name != "sqlite":
+        return False
+    database = engine.url.database
+    if database in (None, ":memory:"):
+        return True
+    return Path(database).expanduser().resolve() == FIXTURE_DATABASE_PATH
 
 
 def create_app(engine=None) -> FastAPI:
@@ -63,6 +77,11 @@ def create_app(engine=None) -> FastAPI:
         from app.cli import seed_all
 
         active_engine = request.app.state.engine or get_engine()
+        if not _is_safe_fixture_reset_engine(active_engine):
+            raise HTTPException(
+                status_code=403,
+                detail="fixture reset only permits the local showcase SQLite database",
+            )
         request.app.state.engine = active_engine
         Base.metadata.drop_all(active_engine)
         create_all(active_engine)
