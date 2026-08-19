@@ -1,4 +1,4 @@
-import {expect, test} from "@playwright/test";
+import {expect, test} from "./fixture";
 
 test("a pending claim can be approved from the library", async ({page}) => {
   await page.goto("/content");

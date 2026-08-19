@@ -20,7 +20,7 @@ export class ApiError extends Error {
   }
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8106";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${baseUrl}${path}`, {
@@ -34,6 +34,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  url(path: string) {
+    return `${baseUrl}${path}`;
+  },
   get<T>(path: string) {
     return request<T>(path);
   },

@@ -8,7 +8,7 @@ import {ApprovalCard} from "@/components/ApprovalCard";
 import {Button} from "@/components/Button";
 import {FlagList} from "@/components/FlagList";
 import {StatusPill} from "@/components/StatusPill";
-import {api} from "@/lib/api";
+import {api, ApiError, type ValidationFlag} from "@/lib/api";
 import {demoApprovals, versionIdForRoute, type DemoApproval} from "@/lib/demoData";
 
 type PageProps = {params: Promise<{id: string}>};
@@ -20,28 +20,44 @@ export default function ApprovalPage({params}: PageProps) {
   const {id} = use(params);
   const [approvals, setApprovals] = useState<DemoApproval[]>(id === "prop_ready" ? demoApprovals.map((item) => item.kind === "proposal" ? {...item, decision: "pending"} : {...item, decision: "approved"}) : demoApprovals);
   const [locked, setLocked] = useState(false);
-  const [flags, setFlags] = useState(flagsFor(id));
+  const [flags, setFlags] = useState<ValidationFlag[]>(flagsFor(id));
   const role = (new URLSearchParams(typeof window === "undefined" ? "" : window.location.search).get("as") ?? "proposal_approver") as Role;
   const versionId = versionIdForRoute(id);
 
   useEffect(() => {
-    api.get<any>(`/v1/proposal-versions/${versionId}`).then((response) => {
-      if (response.approvals?.length) setApprovals(response.approvals);
-      if (response.status === "locked" || response.status === "rendered" || response.status === "delivered") setLocked(true);
+    let active = true;
+    api.get<any>(`/v1/proposal-versions/${versionId}`).then(async (response) => {
+      if (["locked", "rendered", "delivered"].includes(response.status)) setLocked(true);
       if (response.unresolvedFlags?.length) setFlags(response.unresolvedFlags.map((code: string) => ({code, severity: "blocking" as const, message: code})));
-    }).catch(() => undefined);
+      let approvals = response.approvals ?? [];
+      if (!approvals.length && !["locked", "rendered", "delivered"].includes(response.status)) {
+        try {
+          const submitted = await api.post<any>(`/v1/proposal-versions/${versionId}/submit`, {});
+          approvals = submitted.approvals ?? [];
+          setFlags([]);
+        } catch (error) {
+          if (error instanceof ApiError && error.flags.length) setFlags(error.flags);
+        }
+      }
+      if (active) setApprovals(approvals);
+    }).catch(() => {
+      if (active) setFlags((current) => current.some((flag) => flag.code === "API_UNAVAILABLE")
+        ? current
+        : [...current, {code: "API_UNAVAILABLE", severity: "blocking", message: "Fixture API unavailable; approvals cannot be changed."}]);
+    });
+    return () => { active = false; };
   }, [versionId]);
 
   const pending = useMemo(() => approvals.filter((item) => item.decision === "pending"), [approvals]);
   const approve = async (approval: DemoApproval) => {
     try {
-      await api.post(`/v1/approvals/${approval.id}/decide`, {decision: "approved", reviewerRole: role});
-    } catch {
-      // The fixture workspace remains useful when the API is not running.
+      const response = await api.post<any>(`/v1/approvals/${approval.id}/decide`, {decision: "approved", reviewerRole: role});
+      setApprovals(response.version.approvals);
+      setLocked(["locked", "rendered", "delivered"].includes(response.version.status));
+      setFlags([]);
+    } catch (error) {
+      setFlags(error instanceof ApiError && error.flags.length ? error.flags : [{code: "API_UNAVAILABLE", severity: "blocking", message: "The fixture API could not record this approval."}]);
     }
-    const updated = approvals.map((item) => item.id === approval.id ? {...item, decision: "approved" as const, reviewer: role} : item);
-    setApprovals(updated);
-    if (updated.every((item) => item.decision === "approved")) setLocked(true);
   };
 
   return <AppShell><div className="workspace-page">

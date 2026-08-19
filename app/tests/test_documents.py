@@ -6,11 +6,67 @@ only the real renderer catches.
 """
 
 import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.pool import StaticPool
 
 from app.adapters import get_adapter
 from app.adapters.base import AdapterFailure
 from app.adapters.documents import DocumentRenderAdapter, render_html, render_pdf
 from app.adapters.storage import LocalStorage, content_hash
+from app.api.main import create_app
+from app.domain.schemas import Document
+from app.persistence.models import create_all
+from app.persistence.repositories import DocumentRepo
+from app.persistence.session import session_scope
+
+
+@pytest.fixture
+def document_download_client(tmp_path, monkeypatch):
+    engine = create_engine(
+        "sqlite+pysqlite:///:memory:", future=True,
+        poolclass=StaticPool, connect_args={"check_same_thread": False},
+    )
+    create_all(engine)
+    monkeypatch.setenv("STORAGE_DIR", str(tmp_path))
+    pdf = b"%PDF-1.7\n" + (b"rendered fixture proposal\n" * 100)
+    uri = LocalStorage().put("ver-download.pdf", pdf)
+    with session_scope(engine) as session:
+        DocumentRepo(session).add(Document(
+            id="doc-download", proposal_version_id="ver-download", status="ready",
+            content_type="application/pdf", storage_uri=uri,
+            content_hash=content_hash(pdf), created_at="2026-08-01T12:00:00Z",
+            ready_at="2026-08-01T12:00:00Z",
+        ))
+    with TestClient(create_app(engine=engine)) as client:
+        yield client, pdf
+
+
+def test_ready_document_download_returns_the_stored_pdf(document_download_client):
+    client, expected_pdf = document_download_client
+
+    response = client.get("/v1/documents/doc-download/download")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content == expected_pdf
+    assert response.content.startswith(b"%PDF")
+
+
+def test_document_download_rejects_an_unknown_identifier(document_download_client):
+    client, _ = document_download_client
+
+    response = client.get("/v1/documents/not-a-document/download")
+
+    assert response.status_code == 404
+
+
+def test_document_download_does_not_accept_a_filesystem_path(document_download_client):
+    client, _ = document_download_client
+
+    response = client.get("/v1/documents/download", params={"path": "../outside.pdf"})
+
+    assert response.status_code == 404
 
 
 def test_rendered_html_contains_totals_formatted_from_minor_units(locked_version,

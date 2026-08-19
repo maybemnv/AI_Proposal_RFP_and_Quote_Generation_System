@@ -34,11 +34,7 @@ export default function OpportunitiesPage() {
         setFailure({...details, message: details.message.replace(/OAuth/gi, "Provider")});
         setFlags(error.flags);
       } else {
-        if (outcome === "failure") {
-          setFailure({code: "AUTH", message: "Token expired for the fixture provider. Reconnect to continue."});
-        } else {
-          setRows((current) => [...current, {id: "opp_northwind", accountName: "Northwind Retail Group", title: "Brand refresh and site rebuild", status: "normalized", currency: "USD"}]);
-        }
+        setFailure({code: "UNAVAILABLE", message: "The fixture API is unavailable. Start it and reset fixture data before retrying."});
       }
     } finally { setBusy(false); }
   }

@@ -13,11 +13,13 @@ blank connection.
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.pool import StaticPool
 
 from app.api import deps
+from app.api import main as main_module
 from app.api.main import create_app
+from app.persistence.models import Base
 from app.domain.schemas import (
     Claim,
     DiscountPolicy,
@@ -165,6 +167,84 @@ def _new_version(client) -> str:
     return _new_proposal(client)[1]
 
 
+# --- Process health and fixture readiness ----------------------------------
+
+
+def test_health_reports_running_but_not_ready_without_fixture_data(client):
+    response = client.get("/health")
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "status": "running",
+        "ready": False,
+        "reason": "fixture data is not seeded",
+    }
+
+
+def test_health_reports_ready_when_fixture_data_is_seeded(client, api_engine):
+    _seed(api_engine)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "running", "ready": True}
+
+
+def test_fixture_reset_seeds_the_running_api_database(client):
+    response = client.post("/v1/fixture/reset")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "reset", "proposalVersions": 2}
+    assert client.get("/health").json() == {"status": "running", "ready": True}
+
+
+def test_fixture_reset_rejects_a_non_sqlite_engine_without_dropping_tables(monkeypatch):
+    engine = create_engine("postgresql+psycopg://proposal:proposal@localhost:5432/proposal")
+    app = create_app(engine=engine)
+    drop_calls = []
+    monkeypatch.setattr(Base.metadata, "drop_all", lambda *args, **kwargs: drop_calls.append(args))
+
+    with TestClient(app) as test_client:
+        response = test_client.post("/v1/fixture/reset")
+
+    assert response.status_code == 403
+    assert response.json()["detail"] == "fixture reset only permits the local showcase SQLite database"
+    assert drop_calls == []
+
+
+def test_fixture_reset_rejects_another_sqlite_file_without_data_loss(tmp_path, monkeypatch):
+    unsafe_path = tmp_path / "production.db"
+    engine = create_engine(f"sqlite+pysqlite:///{unsafe_path}", future=True)
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE sentinel (value INTEGER)"))
+        connection.execute(text("INSERT INTO sentinel VALUES (7)"))
+    app = create_app(engine=engine)
+    drop_calls = []
+    monkeypatch.setattr(Base.metadata, "drop_all", lambda *args, **kwargs: drop_calls.append(args))
+
+    with TestClient(app) as test_client:
+        response = test_client.post("/v1/fixture/reset")
+
+    assert response.status_code == 403
+    assert drop_calls == []
+    with engine.connect() as connection:
+        assert connection.scalar(text("SELECT value FROM sentinel")) == 7
+
+
+def test_fixture_reset_allows_the_configured_showcase_sqlite_file(tmp_path, monkeypatch):
+    fixture_path = tmp_path / "var" / "showcase.db"
+    fixture_path.parent.mkdir()
+    monkeypatch.setattr(main_module, "FIXTURE_DATABASE_PATH", fixture_path.resolve())
+    engine = create_engine(f"sqlite+pysqlite:///{fixture_path}", future=True)
+    app = create_app(engine=engine)
+
+    with TestClient(app) as test_client:
+        response = test_client.post("/v1/fixture/reset")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "reset", "proposalVersions": 2}
+
+
 # --- The nine PRD endpoints ------------------------------------------------
 
 
@@ -212,6 +292,25 @@ def test_generate_then_calculate_then_validate_is_clean(client, api_engine):
     response = client.post(f"/v1/proposal-versions/{version_id}/validate")
     assert response.status_code == 200, response.text
     assert [f for f in response.json()["flags"] if f["severity"] == "blocking"] == []
+
+
+def test_quote_rejects_a_discount_that_would_make_the_total_negative(client, api_engine):
+    _seed(api_engine)
+    version_id = _new_version(client)
+    body = {
+        key: value for key, value in QUOTE_BODY.items()
+        if key != "installments"
+    } | {"discountMinor": 900000}
+
+    response = client.post(f"/v1/proposal-versions/{version_id}/quote/calculate", json=body)
+
+    assert response.status_code == 409
+    assert response.json()["flags"] == [{
+        "code": "PRICE_MISMATCH",
+        "severity": "blocking",
+        "message": "negative total is rejected (I3)",
+        "relatedIds": [version_id],
+    }]
 
 
 def test_submit_is_refused_while_a_blocking_flag_is_open(client, api_engine):

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import {expect, test} from "./fixture";
 
 test("importing a hubspot opportunity lands normalized", async ({page}) => {
   await page.goto("/opportunities");
