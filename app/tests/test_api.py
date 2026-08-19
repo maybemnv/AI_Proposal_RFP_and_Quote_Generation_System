@@ -165,6 +165,29 @@ def _new_version(client) -> str:
     return _new_proposal(client)[1]
 
 
+# --- Process health and fixture readiness ----------------------------------
+
+
+def test_health_reports_running_but_not_ready_without_fixture_data(client):
+    response = client.get("/health")
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "status": "running",
+        "ready": False,
+        "reason": "fixture data is not seeded",
+    }
+
+
+def test_health_reports_ready_when_fixture_data_is_seeded(client, api_engine):
+    _seed(api_engine)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "running", "ready": True}
+
+
 # --- The nine PRD endpoints ------------------------------------------------
 
 

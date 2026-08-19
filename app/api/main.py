@@ -1,9 +1,15 @@
 """FastAPI application factory."""
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.routes import analytics, approvals, documents, opportunities, proposals, quotes
+from app.persistence.repositories import OpportunityRepo
+from app.persistence.session import get_engine, session_scope
+
+
 def create_app(engine=None) -> FastAPI:
     application = FastAPI(title="Proposal Workflow Prototype", version="0.1.0")
     # Resolve the default database lazily on the first request. Importing the
@@ -22,6 +28,34 @@ def create_app(engine=None) -> FastAPI:
     application.include_router(approvals.router, prefix="/v1")
     application.include_router(documents.router, prefix="/v1")
     application.include_router(analytics.router, prefix="/v1")
+
+    @application.get("/health")
+    def health(request: Request):
+        try:
+            active_engine = request.app.state.engine or get_engine()
+            request.app.state.engine = active_engine
+            with session_scope(active_engine) as session:
+                ready = bool(OpportunityRepo(session).list())
+        except (OSError, SQLAlchemyError):
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "status": "running",
+                    "ready": False,
+                    "reason": "fixture database is unavailable",
+                },
+            )
+        if not ready:
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "status": "running",
+                    "ready": False,
+                    "reason": "fixture data is not seeded",
+                },
+            )
+        return {"status": "running", "ready": True}
+
     return application
 
 

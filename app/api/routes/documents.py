@@ -1,10 +1,11 @@
 """Render and deliver locked proposal versions."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
 from app.adapters import get_adapter
 from app.adapters.base import AdapterFailure
+from app.adapters.storage import LocalStorage
 from app.api import deps
 from app.api.utils import dump, flag, flags_response, not_found, version_payload
 from app.domain.audit import record_event
@@ -22,6 +23,22 @@ from app.persistence.repositories import (
 )
 
 router = APIRouter()
+
+
+@router.get("/documents/{document_id}/download")
+def download(document_id: str, session: Session = Depends(deps.db)):
+    document = DocumentRepo(session).find(document_id)
+    if document is None or document.status != "ready":
+        return not_found("document", document_id)
+    try:
+        content = LocalStorage().get(f"{document.proposal_version_id}.pdf")
+    except (FileNotFoundError, ValueError):
+        return not_found("document", document_id)
+    return Response(
+        content=content,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{document.id}.pdf"'},
+    )
 
 
 def _render_inputs(session, version):
