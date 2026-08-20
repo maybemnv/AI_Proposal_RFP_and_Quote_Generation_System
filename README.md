@@ -1,84 +1,70 @@
-# Proposal Workflow Prototype
+# Proposal Workflow System
 
-This repository is a deterministic prototype for turning CRM/RFP source material into a source-linked proposal, a rule-backed quote, role-gated approvals, a rendered PDF, delivery, and post-send engagement analytics.
+Source-linked proposal and quote workflow for turning CRM/RFP material into an evidence-backed proposal, rule-backed pricing, role-gated approvals, rendered PDF delivery, and post-send engagement analytics.
 
-The default demo mode is fixture-backed. It needs no provider credentials and keeps the same contracts used by live generation and provider adapters.
+## Project status
 
-## Fixture showcase quick start
+The default path is a deterministic fixture showcase. It needs no provider credentials and preserves the contracts used by live adapters. Authentication, tenant provisioning, migrations, live providers, durable document storage, and production deployment are not included in the fixture boundary.
 
-The supported showcase runs entirely from deterministic fixtures: no Docker, paid
-credentials, or live provider accounts are required. Copy `.env.example` to
-`.env`, then install the project and browser dependencies.
+## Architecture
 
-```powershell
-python -m pip install -e ".[dev]"
-python -m playwright install chromium
-cd app/web
-npm ci
-cd ../..
+```mermaid
+graph LR
+    Web[React workbench] --> API[FastAPI API]
+    API --> DB[(SQLite fixture / PostgreSQL target)]
+    API --> Files[Local document storage]
+    API --> Providers[CRM, generation, delivery, analytics adapters]
 ```
 
-Reset the local fixture database before the demo:
+## Included capabilities
+
+- Opportunity import and source normalization.
+- Evidence-linked proposal drafting and scope management.
+- Server-shaped quote lines, options, policy review, and payment schedules.
+- Role-gated approval and immutable locking behavior.
+- PDF preview/download, delivery status, and engagement analytics.
+- Deterministic adapter failures and fixture browser coverage.
+
+## Quick start
+
+Prerequisites: Python 3.11+, [`uv`](https://docs.astral.sh/uv/), Node.js/npm, and PowerShell.
 
 ```powershell
-python -m app.cli reset
+uv sync
+npm --prefix app/web ci
+.\start-dev.ps1
 ```
 
-Start the API and web shell in two PowerShell terminals from the repository root.
-
-```powershell
-# Terminal 1
-$env:DATABASE_URL = "sqlite+pysqlite:///var/showcase.db"
-$env:STORAGE_DIR = "var/documents"
-uvicorn app.api.main:app --port 8106
-
-# Terminal 2
-cd app/web
-npm run dev
-```
-
-Open `http://localhost:3106`. Confirm the fixture is ready before presenting it:
-
-```powershell
-Invoke-RestMethod http://localhost:8106/health
-# expected: @{status=running; ready=True}
-```
-
-The API returns HTTP 503 with `ready: false` when the fixture database is missing
-or unseeded. The rendered PDF is stored locally under `var/documents/`.
+The launcher resets the disposable SQLite fixture and starts the API at `http://127.0.0.1:8106` and the web workbench at `http://127.0.0.1:3106`.
 
 ## Verification
 
 ```powershell
-python -m pytest -q
-ruff check app/
-cd app/web
-npm run build
-npm run e2e
+uv run pytest -q
+uv run ruff check app/
+npm --prefix app/web run build
+npm --prefix app/web run e2e
 ```
 
-The browser suite owns a clean SQLite fixture lifecycle, checks the downloaded
-artifact begins with `%PDF`, and includes desktop and narrow-mobile Trace A
-coverage. `python -m app.cli demo` is also available as a terminal fallback and
-writes a fixture PDF under `var/storage/`.
+## Project structure
 
-## Workflow screens
+```text
+app/api/         FastAPI routes, authorization boundary, and health checks
+app/persistence/ SQLite/PostgreSQL repository contracts and models
+app/web/         Proposal workbench and browser tests
+app/providers/   CRM, generation, delivery, and analytics adapters
+docs/            Demo runbook and supporting handoff material
+tests/           API, workflow, security, and browser verification
+```
 
-- `/opportunities` — import and normalize source opportunities, including adapter failures.
-- `/proposals/prop_northwind` — source-linked draft editor and evidence rail.
-- `/proposals/prop_northwind/scope` — deliverables, milestones, assumptions, exclusions, and open questions.
-- `/proposals/prop_northwind/quote` — server-shaped pricing lines, options, policy review, and payment schedule.
-- `/proposals/prop_northwind/approval` — role-gated approval cards and locking.
-- `/proposals/prop_northwind/preview` — client document preview and PDF download.
-- `/content` — claim approval, validity windows, evidence, and expiry blocking.
-- `/analytics` — KPI tiles, provider timeline, and one-series views chart with table view.
+## Demo workflow
 
-See [`docs/DEMO_RUNBOOK.md`](docs/DEMO_RUNBOOK.md) for the click-by-click pitch script and fallback procedure.
+The primary screens are opportunities, proposal evidence, scope, quote, approval, preview, content, and analytics. Follow [`docs/DEMO_RUNBOOK.md`](docs/DEMO_RUNBOOK.md) for the click-by-click walkthrough and fallback procedure.
 
-## Scope boundaries
+## Configuration and safety
 
-Fixture mode is intentionally the reliable demo path. Live generation remains
-optional and unverified: use `GENERATION_MODE=claude` and set
-`ANTHROPIC_API_KEY` only in a local, uncommitted `.env`. Auth, tenant
-provisioning, migrations, live provider credentials, multi-currency, and
-production deployment are outside this prototype.
+Fixture mode uses SQLite and local document storage. Keep `ANTHROPIC_API_KEY`, CRM credentials, delivery credentials, and admin credentials in server-side environment or secret-manager contexts. Never commit `.env`, generated documents, or provider secrets. The fixture reset is disposable-only behavior.
+
+## Production boundary
+
+Before live use, implement authenticated actors, workspace-level authorization, database migrations, durable object storage, transactional provider operations, idempotency, audit persistence, retention/deletion, backups, observability, and recovery tests. A fixture PDF or browser pass does not establish production readiness.
