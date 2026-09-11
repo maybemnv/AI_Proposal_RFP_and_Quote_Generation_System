@@ -8,7 +8,7 @@ export type DemoQuoteLine = {
   ruleId: string;
   ruleVersion: string;
   quantity: number;
-  unit: string;
+  unit?: string;
   unitPriceMinor: number;
   subtotalMinor: number;
   optional: boolean;
@@ -21,7 +21,7 @@ export type DemoQuote = {
   discountMinor: number;
   taxMinor: number;
   totalMinor: number;
-  paymentSchedule: {id: string; label: string; percent: number; amountMinor: number}[];
+  paymentSchedule: {id: string; label: string; percent?: number; amountMinor: number; dueDescription?: string}[];
   status: "calculated" | "review_required";
   policyMessage?: string;
 };

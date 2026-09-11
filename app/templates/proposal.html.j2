@@ -206,6 +206,9 @@
 </section>
 
 <section id="rfp-answers">
+  {%- if sections_by_key.get("rfp_answers") %}
+  <h2>RFP answers</h2>
+  {%- endif %}
   {{ render_blocks("rfp_answers") }}
 </section>
 

@@ -13,7 +13,7 @@ export function QuoteTable({lines, onOptionalToggle, readOnly = false}: QuoteTab
   </tr></thead><tbody>{lines.map((line) => <tr data-testid="quote-line" key={line.id}>
     <td><label className="quote-line-label">{line.optional && <input type="checkbox" data-testid={line.id} checked={line.selected} disabled={readOnly} onChange={(event) => onOptionalToggle(line.id, event.target.checked)} />}<span>{line.label}</span>{line.optional && <small>Optional</small>}</label></td>
     <td><span data-testid="rule-version" className="rule-version">{line.ruleVersion}</span><small className="table-subline">{line.ruleId}</small></td>
-    <td>{line.quantity} {line.unit}</td>
+    <td>{line.quantity}{line.unit ? ` ${line.unit}` : ""}</td>
     <td data-minor={line.unitPriceMinor}>{formatMinor(line.unitPriceMinor)}</td>
     <td data-minor={line.subtotalMinor}>{formatMinor(line.subtotalMinor)}</td>
   </tr>)}</tbody></table></div>;
