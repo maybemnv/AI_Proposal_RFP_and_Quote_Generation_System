@@ -1,4 +1,5 @@
 const {execFileSync, spawn} = require("node:child_process");
+const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "../../..");
@@ -20,6 +21,9 @@ const python = pythonCandidates.find((candidate) => {
 if (!python) {
   throw new Error("Python interpreter not found; create .venv or set the PYTHON environment variable.");
 }
+
+fs.mkdirSync(path.join(root, "var", "documents"), {recursive: true});
+
 const env = {
   ...process.env,
   APP_ENV: "local-fixture",
