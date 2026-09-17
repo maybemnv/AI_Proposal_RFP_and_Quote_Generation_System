@@ -159,7 +159,13 @@ def seed_all(session) -> SeedResult:
     engagement = EngagementRepo(session)
     for record in (
         EngagementRecord(id="eng-sent", proposal_version_id="version_northwind", provider="pandadoc", type="sent", document_id="doc-northwind", at="2026-08-01T09:00:00Z"),
-        EngagementRecord(id="eng-viewed", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-02T12:00:00Z"),
+        EngagementRecord(id="eng-viewed-01", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-02T12:00:00Z"),
+        EngagementRecord(id="eng-viewed-02", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-03T12:00:00Z"),
+        EngagementRecord(id="eng-viewed-03", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-04T12:00:00Z"),
+        EngagementRecord(id="eng-viewed-04", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-05T12:00:00Z"),
+        EngagementRecord(id="eng-viewed-05", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-06T12:00:00Z"),
+        EngagementRecord(id="eng-viewed-06", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-07T12:00:00Z"),
+        EngagementRecord(id="eng-viewed-07", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-08T12:00:00Z"),
         EngagementRecord(id="eng-signed", proposal_version_id="version_northwind", provider="pandadoc", type="signed", document_id="doc-northwind", at="2026-08-03T15:00:00Z"),
         EngagementRecord(id="eng-declined", proposal_version_id="version_rfp_response", provider="pandadoc", type="declined", document_id="doc-rfp", at="2026-08-04T10:00:00Z"),
         EngagementRecord(id="eng-expired", proposal_version_id="version_rfp_response", provider="pandadoc", type="expired", document_id="doc-rfp", at="2026-08-05T08:00:00Z"),
