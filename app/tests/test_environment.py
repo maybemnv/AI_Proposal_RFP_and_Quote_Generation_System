@@ -1,5 +1,6 @@
 import pytest
 from fastapi import HTTPException
+from fastapi.testclient import TestClient
 
 from app.adapters.generation import get_generation_adapter
 from app.api.deps import current_actor
@@ -35,3 +36,15 @@ def test_production_actor_does_not_trust_browser_actor_header(monkeypatch):
     with pytest.raises(HTTPException) as error:
         current_actor(authorization=None, x_actor_id="admin")
     assert error.value.status_code == 401
+
+
+def test_production_reads_require_the_server_auth_boundary(engine, monkeypatch):
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.setenv("DATABASE_URL", "postgresql+psycopg://server-only")
+    monkeypatch.setenv("STORAGE_BACKEND", "s3")
+    monkeypatch.setenv("S3_BUCKET", "private-documents")
+    monkeypatch.setenv("PRODUCTION_API_TOKEN", "server-token")
+
+    response = TestClient(create_app(engine=engine)).get("/v1/opportunities")
+
+    assert response.status_code == 401

@@ -1,6 +1,7 @@
 """FastAPI application factory."""
 
 from pathlib import Path
+import os
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,6 +40,14 @@ def create_app(engine=None) -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    @application.middleware("http")
+    async def production_auth(request: Request, call_next):
+        if not is_local_fixture() and request.url.path.startswith("/v1"):
+            expected = f"Bearer {os.environ.get('PRODUCTION_API_TOKEN', '')}"
+            if request.headers.get("authorization") != expected:
+                return JSONResponse(status_code=401, content={"detail": "authenticated actor required"})
+        return await call_next(request)
     application.include_router(opportunities.router, prefix="/v1")
     application.include_router(proposals.router, prefix="/v1")
     application.include_router(quotes.router, prefix="/v1")
