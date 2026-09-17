@@ -96,9 +96,10 @@ def create_app(engine=None) -> FastAPI:
                 detail="fixture reset only permits the local showcase SQLite database",
             )
         request.app.state.engine = active_engine
-        Base.metadata.drop_all(active_engine)
         create_all(active_engine)
         with session_scope(active_engine) as session:
+            for table in reversed(Base.metadata.sorted_tables):
+                session.execute(table.delete())
             result = seed_all(session)
         return {"status": "reset", "proposalVersions": len(result.version_ids)}
 
