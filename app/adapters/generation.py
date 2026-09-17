@@ -31,6 +31,7 @@ from app.domain.schemas import (
     GeneratedSection,
     ValidationFlag,
 )
+from app.runtime import validate_generation_mode
 
 DEFAULT_MODEL = "claude-opus-5"
 MAX_TOKENS = 16000
@@ -275,6 +276,8 @@ def get_generation_adapter() -> GenerationAdapter:
     """``GENERATION_MODE=claude`` opts into the live model. Anything else, including
     an unset variable, is fixture mode — a demo cannot fail because a key is
     missing."""
-    if os.environ.get("GENERATION_MODE", "fixture").strip().lower() == "claude":
+    mode = os.environ.get("GENERATION_MODE", "fixture")
+    validate_generation_mode(mode)
+    if mode.strip().lower() == "claude":
         return ClaudeGenerationAdapter()
     return FixtureGenerationAdapter()

@@ -11,6 +11,7 @@ from app.api.routes import analytics, approvals, documents, opportunities, propo
 from app.persistence.models import Base, create_all
 from app.persistence.repositories import OpportunityRepo
 from app.persistence.session import get_engine, session_scope
+from app.runtime import cors_origins, is_local_fixture, validate_runtime
 
 FIXTURE_DATABASE_PATH = Path(__file__).resolve().parents[2] / "var" / "showcase.db"
 
@@ -26,13 +27,14 @@ def _is_safe_fixture_reset_engine(engine) -> bool:
 
 
 def create_app(engine=None) -> FastAPI:
+    validate_runtime()
     application = FastAPI(title="Proposal Workflow Prototype", version="0.1.0")
     # Resolve the default database lazily on the first request. Importing the
     # ASGI module should not require a local Postgres driver or network access.
     application.state.engine = engine
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3106"],
+        allow_origins=cors_origins(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -76,6 +78,8 @@ def create_app(engine=None) -> FastAPI:
         """Replace only local fixture data so browser tests own their lifecycle."""
         from app.cli import seed_all
 
+        if not is_local_fixture():
+            raise HTTPException(status_code=404, detail="fixture reset is disabled")
         active_engine = request.app.state.engine or get_engine()
         if not _is_safe_fixture_reset_engine(active_engine):
             raise HTTPException(

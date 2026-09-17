@@ -22,6 +22,7 @@ if (!python) {
 }
 const env = {
   ...process.env,
+  APP_ENV: "local-fixture",
   DATABASE_URL: "sqlite+pysqlite:///var/showcase.db",
   STORAGE_DIR: "var/documents",
 };

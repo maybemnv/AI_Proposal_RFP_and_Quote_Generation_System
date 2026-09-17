@@ -2,6 +2,7 @@
 real pricing engine, never hand-written dicts, so a contract change breaks the
 fixtures rather than letting stale shapes pass."""
 
+import os
 from decimal import Decimal
 
 import pytest
@@ -27,6 +28,8 @@ from app.domain.schemas import (
 )
 from app.persistence.models import create_all
 from app.persistence.session import get_engine
+
+os.environ.setdefault("APP_ENV", "local-fixture")
 
 NOW = "2026-08-01T10:00:00Z"
 

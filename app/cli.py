@@ -1,9 +1,9 @@
 """Deterministic seed, reset, and terminal demo operations."""
 
-from dataclasses import dataclass
 import json
-from pathlib import Path
 import os
+from dataclasses import dataclass
+from pathlib import Path
 
 import typer
 
@@ -11,8 +11,8 @@ from app.api.main import create_app
 from app.domain.pricing import calculate_quote
 from app.domain.schemas import (
     Claim,
-    DiscoveryInput,
     DiscountPolicy,
+    DiscoveryInput,
     EvidenceLink,
     Opportunity,
     PricingRule,
@@ -25,8 +25,8 @@ from app.domain.schemas import (
 from app.persistence.models import Base, create_all
 from app.persistence.repositories import (
     ClaimRepo,
-    DiscoveryRepo,
     DiscountPolicyRepo,
+    DiscoveryRepo,
     EvidenceRepo,
     OpportunityRepo,
     PricingRuleRepo,
@@ -36,6 +36,7 @@ from app.persistence.repositories import (
     VersionRepo,
 )
 from app.persistence.session import get_engine, session_scope
+from app.runtime import is_local_fixture
 
 FIXTURE_ROOT = Path(__file__).resolve().parent / "fixtures"
 SEED_NOW = "2026-08-01T09:30:00Z"
@@ -174,6 +175,8 @@ def _get_database():
 @app_cli.command()
 def seed():
     """Load Trace A and Trace B fixtures into the database."""
+    if not is_local_fixture():
+        raise typer.BadParameter("fixture seed requires APP_ENV=local-fixture")
     engine = _get_database()
     with session_scope(engine) as session:
         result = seed_all(session)
@@ -187,6 +190,8 @@ def seed():
 @app_cli.command()
 def demo():
     """Run Trace A end to end and print each gate as it passes."""
+    if not is_local_fixture():
+        raise typer.BadParameter("fixture demo requires APP_ENV=local-fixture")
     os.environ.setdefault("STORAGE_DIR", "var/storage")
     engine = _get_database()
     with session_scope(engine) as session:
@@ -256,6 +261,8 @@ def demo():
 @app_cli.command()
 def reset():
     """Drop and recreate all tables, then seed."""
+    if not is_local_fixture():
+        raise typer.BadParameter("fixture reset requires APP_ENV=local-fixture")
     engine = get_engine()
     Base.metadata.drop_all(engine)
     create_all(engine)
