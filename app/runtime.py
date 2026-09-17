@@ -64,7 +64,21 @@ def validate_generation_mode(mode: str) -> None:
 
 
 def validate_runtime() -> None:
-    if not is_local_fixture():
+    environment = get_app_environment()
+    if environment is AppEnvironment.LOCAL_FIXTURE:
+        return
+    database_url = os.getenv("DATABASE_URL", "")
+    if not database_url.startswith(("postgresql://", "postgresql+psycopg://")):
         raise EnvironmentConfigurationError(
-            "proposal runtime is fixture-only; use APP_ENV=local-fixture"
+            "DATABASE_URL must be a PostgreSQL URL outside APP_ENV=local-fixture"
+        )
+    if os.getenv("STORAGE_BACKEND", "").lower() != "s3":
+        raise EnvironmentConfigurationError(
+            "STORAGE_BACKEND=s3 is required outside APP_ENV=local-fixture"
+        )
+    if not os.getenv("S3_BUCKET"):
+        raise EnvironmentConfigurationError("S3_BUCKET is required outside APP_ENV=local-fixture")
+    if not os.getenv("PRODUCTION_API_TOKEN"):
+        raise EnvironmentConfigurationError(
+            "PRODUCTION_API_TOKEN is required outside APP_ENV=local-fixture"
         )

@@ -13,6 +13,7 @@ import hashlib
 import os
 from pathlib import Path
 from typing import Protocol
+from uuid import uuid4
 
 DEFAULT_STORAGE_DIR = Path("var") / "documents"
 
@@ -30,6 +31,8 @@ def content_hash(data: bytes) -> str:
 class Storage(Protocol):
     def put(self, path: str, data: bytes) -> str: ...
     def get(self, path: str) -> bytes: ...
+    def get_uri(self, uri: str) -> bytes: ...
+    def signed_url(self, uri: str, expires: int = 300) -> str: ...
 
 
 class LocalStorage:
@@ -59,3 +62,55 @@ class LocalStorage:
 
     def get(self, path: str) -> bytes:
         return self._resolve(path).read_bytes()
+
+    def get_uri(self, uri: str) -> bytes:
+        return self.get(Path(uri).name)
+
+    def signed_url(self, uri: str, expires: int = 300) -> str:
+        return uri
+
+
+class S3Storage:
+    """Private S3-compatible storage; credentials stay in the server environment."""
+
+    def __init__(self) -> None:
+        import boto3
+
+        self.bucket = os.environ["S3_BUCKET"]
+        self.client = boto3.client(
+            "s3",
+            endpoint_url=os.getenv("S3_ENDPOINT_URL") or None,
+            region_name=os.getenv("S3_REGION", "auto"),
+        )
+
+    def put(self, path: str, data: bytes) -> str:
+        key = f"documents/{uuid4().hex}.pdf"
+        self.client.put_object(
+            Bucket=self.bucket, Key=key, Body=data, ContentType="application/pdf"
+        )
+        return f"s3://{self.bucket}/{key}"
+
+    def get(self, path: str) -> bytes:
+        raise ValueError("S3 objects must be addressed by their storage URI")
+
+    def get_uri(self, uri: str) -> bytes:
+        bucket, key = _parse_s3_uri(uri)
+        return self.client.get_object(Bucket=bucket, Key=key)["Body"].read()
+
+    def signed_url(self, uri: str, expires: int = 300) -> str:
+        bucket, key = _parse_s3_uri(uri)
+        return self.client.generate_presigned_url(
+            "get_object", Params={"Bucket": bucket, "Key": key}, ExpiresIn=expires
+        )
+
+
+def _parse_s3_uri(uri: str) -> tuple[str, str]:
+    scheme, _, value = uri.partition("://")
+    bucket, _, key = value.partition("/")
+    if scheme != "s3" or not bucket or not key:
+        raise ValueError("invalid private object storage URI")
+    return bucket, key
+
+
+def storage_from_env() -> Storage:
+    return S3Storage() if os.getenv("STORAGE_BACKEND", "local").lower() == "s3" else LocalStorage()
