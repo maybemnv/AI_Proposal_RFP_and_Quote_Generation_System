@@ -79,6 +79,7 @@ jobs:
         working-directory: app/web
       - run: npx playwright install --with-deps chromium
         working-directory: app/web
+      - run: uv run playwright install chromium
       - run: npm run build
         working-directory: app/web
       - run: npm run e2e

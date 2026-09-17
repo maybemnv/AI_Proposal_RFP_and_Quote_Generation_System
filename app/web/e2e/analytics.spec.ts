@@ -22,6 +22,7 @@ test("only the max and latest bars are directly labelled", async ({page}) => {
 test("bars are anchored to the baseline with rounded data-ends", async ({page}) => {
   await page.goto("/analytics");
   const bar = page.getByTestId("bar").first();
+  await expect(bar).toBeVisible();
   await expect(bar).toHaveAttribute("rx", "4");
   const [barBox, axisBox] = [await bar.boundingBox(), await page.getByTestId("x-axis").boundingBox()];
   expect(Math.abs(barBox!.y + barBox!.height - axisBox!.y)).toBeLessThan(2);
