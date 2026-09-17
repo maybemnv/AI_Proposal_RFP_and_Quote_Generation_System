@@ -13,6 +13,7 @@ from app.domain.schemas import (
     Claim,
     DiscountPolicy,
     DiscoveryInput,
+    EngagementRecord,
     EvidenceLink,
     Opportunity,
     PricingRule,
@@ -34,6 +35,7 @@ from app.persistence.repositories import (
     RequirementRepo,
     SourceRecordRepo,
     VersionRepo,
+    EngagementRepo,
 )
 from app.persistence.session import get_engine, session_scope
 from app.runtime import is_local_fixture
@@ -153,6 +155,16 @@ def seed_all(session) -> SeedResult:
         rule = PricingRule.model_validate(raw)
         _upsert(rule_repo, rule)
         rule_ids.append(rule.id)
+
+    engagement = EngagementRepo(session)
+    for record in (
+        EngagementRecord(id="eng-sent", proposal_version_id="version_northwind", provider="pandadoc", type="sent", document_id="doc-northwind", at="2026-08-01T09:00:00Z"),
+        EngagementRecord(id="eng-viewed", proposal_version_id="version_northwind", provider="pandadoc", type="viewed", document_id="doc-northwind", at="2026-08-02T12:00:00Z"),
+        EngagementRecord(id="eng-signed", proposal_version_id="version_northwind", provider="pandadoc", type="signed", document_id="doc-northwind", at="2026-08-03T15:00:00Z"),
+        EngagementRecord(id="eng-declined", proposal_version_id="version_rfp_response", provider="pandadoc", type="declined", document_id="doc-rfp", at="2026-08-04T10:00:00Z"),
+        EngagementRecord(id="eng-expired", proposal_version_id="version_rfp_response", provider="pandadoc", type="expired", document_id="doc-rfp", at="2026-08-05T08:00:00Z"),
+    ):
+        _upsert(engagement, record)
 
     return SeedResult(
         opportunity_ids=["opp_northwind", "opp_rfp_response"],
