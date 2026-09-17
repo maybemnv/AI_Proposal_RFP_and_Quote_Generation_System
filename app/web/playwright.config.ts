@@ -8,7 +8,7 @@ const webServer = process.env.PLAYWRIGHT_EXTERNAL_SERVERS ? undefined : [
     timeout: 120_000,
   },
   {
-    command: "node node_modules/next/dist/bin/next dev -p 3106",
+    command: "node node_modules/next/dist/bin/next start -p 3106",
     url: "http://localhost:3106",
     reuseExistingServer: false,
     timeout: 120_000,
