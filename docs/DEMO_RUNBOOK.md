@@ -9,9 +9,9 @@
 
 ## Before every demo
 
-1. From the repository root, run `python -m app.cli reset`.
-2. In terminal 1, run `$env:DATABASE_URL = "sqlite+pysqlite:///var/showcase.db"; $env:STORAGE_DIR = "var/documents"; uvicorn app.api.main:app --port 8106`.
-3. In terminal 2, run `cd app/web; npm run dev`. The web shell binds `3106`.
+1. From the repository root, run `$env:APP_ENV = "local-fixture"; python -m app.cli reset`.
+2. In terminal 1, run `$env:APP_ENV = "local-fixture"; $env:DATABASE_URL = "sqlite+pysqlite:///var/showcase.db"; $env:STORAGE_DIR = "var/documents"; uvicorn app.api.main:app --port 8106`.
+3. In terminal 2, run `cd app/web; $env:NEXT_PUBLIC_APP_ENV = "local-fixture"; $env:NEXT_PUBLIC_API_URL = "http://localhost:8106"; npm run dev`. The web shell binds `3106`.
 4. Confirm readiness with `Invoke-RestMethod http://localhost:8106/health`; expected response is `status: running` and `ready: true`.
 5. Run the smoke path: `cd app/web; npm run e2e -- e2e/trace-a.spec.ts`.
 6. If the smoke test is green, open `http://localhost:3106`.
@@ -35,7 +35,7 @@
 If the browser or provider stack is unavailable, run:
 
 ```bash
-python -m app.cli demo
+$env:APP_ENV = "local-fixture"; python -m app.cli demo
 ```
 
 It executes the deterministic Trace A gates and writes the PDF under `var/storage/`.

@@ -24,7 +24,12 @@ test("total equals subtotal minus discount plus tax", async ({page}) => {
   await page.goto("/proposals/prop_northwind/quote");
   await page.getByLabel("Discount").fill("500.00");
   await page.getByLabel("Tax").fill("120.00");
+  const recalculated = page.waitForResponse((response) =>
+    response.request().method() === "POST"
+      && response.url().endsWith("/v1/proposal-versions/version_northwind/quote/calculate"),
+  );
   await page.getByRole("button", {name: "Recalculate"}).click();
+  await recalculated;
   const read = async (id: string) =>
     Number((await page.getByTestId(id).getAttribute("data-minor"))!);
   expect(await read("total-minor")).toBe(

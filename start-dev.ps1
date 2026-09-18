@@ -26,10 +26,10 @@ function Start-Terminal {
     )
 }
 
-$apiCommand = "`$env:DATABASE_URL = 'sqlite+pysqlite:///var/showcase.db'; `$env:STORAGE_DIR = 'var/documents'; uv run python -m app.cli reset; uv run uvicorn app.api.main:app --host 127.0.0.1 --port 8106"
+$apiCommand = "`$env:APP_ENV = 'local-fixture'; `$env:DATABASE_URL = 'sqlite+pysqlite:///var/showcase.db'; `$env:STORAGE_DIR = 'var/documents'; uv run python -m app.cli reset; uv run uvicorn app.api.main:app --host 127.0.0.1 --port 8106"
 $webDirectory = Join-Path $Root "app\web"
 Start-Terminal "Proposal API" $Root $apiCommand
-Start-Terminal "Proposal Web" $webDirectory "npm.cmd run dev -- --hostname 127.0.0.1 --port 3106"
+Start-Terminal "Proposal Web" $webDirectory "`$env:APP_ENV = 'local-fixture'; `$env:NEXT_PUBLIC_API_URL = 'http://localhost:8106'; npm.cmd run dev -- --hostname 127.0.0.1 --port 3106"
 
 Write-Host "Proposal demo starting at http://127.0.0.1:3106"
 Write-Host "API health: http://127.0.0.1:8106/health"

@@ -4,7 +4,7 @@ Source-linked proposal and quote workflow for turning CRM/RFP material into an e
 
 ## Project status
 
-The default path is a deterministic fixture showcase. It needs no provider credentials and preserves the contracts used by live adapters. Authentication, tenant provisioning, migrations, live providers, durable document storage, and production deployment are not included in the fixture boundary.
+The default path is a deterministic fixture showcase. It needs no provider credentials and preserves the contracts used by live adapters. The repository also contains a production-ready persistence, authentication, migration, and private object-storage boundary; staging/production still require supplying those resources and secrets.
 
 ## Architecture
 
@@ -67,4 +67,4 @@ Fixture mode uses SQLite and local document storage. Keep `ANTHROPIC_API_KEY`, C
 
 ## Production boundary
 
-Before live use, implement authenticated actors, workspace-level authorization, database migrations, durable object storage, transactional provider operations, idempotency, audit persistence, retention/deletion, backups, observability, and recovery tests. A fixture PDF or browser pass does not establish production readiness.
+Before live use, apply the Alembic migrations, configure authenticated actors, workspace-level authorization, object storage, provider operations, backups, observability, and recovery policy. A fixture PDF or browser pass does not establish external provider or deployment verification.

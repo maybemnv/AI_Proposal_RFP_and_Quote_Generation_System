@@ -17,7 +17,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from app.adapters.base import AdapterFailure, FixtureAdapter
-from app.adapters.storage import LocalStorage, Storage, content_hash
+from app.adapters.storage import Storage, content_hash, storage_from_env
 from app.domain.money import format_minor
 from app.domain.schemas import Claim, EvidenceLink, GeneratedSection, ProposalVersion
 
@@ -133,7 +133,7 @@ class DocumentRenderAdapter:
     provider = "manual"
 
     def __init__(self, storage: Storage | None = None) -> None:
-        self._storage = storage or LocalStorage()
+        self._storage = storage or storage_from_env()
 
     def capabilities(self) -> list[str]:
         return ["render_document", "store_document"]

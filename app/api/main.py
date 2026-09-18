@@ -1,6 +1,7 @@
 """FastAPI application factory."""
 
 from pathlib import Path
+import os
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +12,7 @@ from app.api.routes import analytics, approvals, documents, opportunities, propo
 from app.persistence.models import Base, create_all
 from app.persistence.repositories import OpportunityRepo
 from app.persistence.session import get_engine, session_scope
+from app.runtime import cors_origins, is_local_fixture, validate_runtime
 
 FIXTURE_DATABASE_PATH = Path(__file__).resolve().parents[2] / "var" / "showcase.db"
 
@@ -26,17 +28,26 @@ def _is_safe_fixture_reset_engine(engine) -> bool:
 
 
 def create_app(engine=None) -> FastAPI:
+    validate_runtime()
     application = FastAPI(title="Proposal Workflow Prototype", version="0.1.0")
     # Resolve the default database lazily on the first request. Importing the
     # ASGI module should not require a local Postgres driver or network access.
     application.state.engine = engine
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3106"],
+        allow_origins=cors_origins(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    @application.middleware("http")
+    async def production_auth(request: Request, call_next):
+        if not is_local_fixture() and request.url.path.startswith("/v1"):
+            expected = f"Bearer {os.environ.get('PRODUCTION_API_TOKEN', '')}"
+            if request.headers.get("authorization") != expected:
+                return JSONResponse(status_code=401, content={"detail": "authenticated actor required"})
+        return await call_next(request)
     application.include_router(opportunities.router, prefix="/v1")
     application.include_router(proposals.router, prefix="/v1")
     application.include_router(quotes.router, prefix="/v1")
@@ -76,6 +87,8 @@ def create_app(engine=None) -> FastAPI:
         """Replace only local fixture data so browser tests own their lifecycle."""
         from app.cli import seed_all
 
+        if not is_local_fixture():
+            raise HTTPException(status_code=404, detail="fixture reset is disabled")
         active_engine = request.app.state.engine or get_engine()
         if not _is_safe_fixture_reset_engine(active_engine):
             raise HTTPException(
@@ -83,9 +96,10 @@ def create_app(engine=None) -> FastAPI:
                 detail="fixture reset only permits the local showcase SQLite database",
             )
         request.app.state.engine = active_engine
-        Base.metadata.drop_all(active_engine)
         create_all(active_engine)
         with session_scope(active_engine) as session:
+            for table in reversed(Base.metadata.sorted_tables):
+                session.execute(table.delete())
             result = seed_all(session)
         return {"status": "reset", "proposalVersions": len(result.version_ids)}
 

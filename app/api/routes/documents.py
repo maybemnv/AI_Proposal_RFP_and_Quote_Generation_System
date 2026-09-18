@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.adapters import get_adapter
 from app.adapters.base import AdapterFailure
-from app.adapters.storage import LocalStorage
+from app.adapters.storage import storage_from_env
 from app.api import deps
 from app.api.utils import dump, flag, flags_response, not_found, version_payload
 from app.domain.audit import record_event
@@ -30,8 +30,13 @@ def download(document_id: str, session: Session = Depends(deps.db)):
     document = DocumentRepo(session).find(document_id)
     if document is None or document.status != "ready":
         return not_found("document", document_id)
+    storage = storage_from_env()
+    if document.storage_uri and document.storage_uri.startswith("s3://"):
+        from fastapi.responses import RedirectResponse
+
+        return RedirectResponse(storage.signed_url(document.storage_uri))
     try:
-        content = LocalStorage().get(f"{document.proposal_version_id}.pdf")
+        content = storage.get_uri(document.storage_uri or f"{document.proposal_version_id}.pdf")
     except (FileNotFoundError, ValueError):
         return not_found("document", document_id)
     return Response(
