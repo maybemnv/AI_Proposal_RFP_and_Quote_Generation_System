@@ -24,11 +24,15 @@ const configuredBaseUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
 const fixtureBuild = process.env.NEXT_PUBLIC_APP_ENV === "local-fixture";
 const baseUrl = configuredBaseUrl || (process.env.NODE_ENV === "development" ? "http://localhost:8106" : "");
 
+export function isLocalApiUrl(value: string): boolean {
+  const hostname = new URL(value).hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  return hostname === "localhost" || hostname === "::1" || /^127(?:\.\d{1,3}){3}$/.test(hostname);
+}
+
 function apiBaseUrl(): string {
   if (!baseUrl) throw new Error("NEXT_PUBLIC_API_URL is required outside local fixture development");
   if (process.env.NODE_ENV === "production" && !fixtureBuild) {
-    const hostname = new URL(baseUrl).hostname;
-    if (["localhost", "127.0.0.1", "::1"].includes(hostname)) {
+    if (isLocalApiUrl(baseUrl)) {
       throw new Error("localhost API URLs are only allowed in local fixture development");
     }
   }

@@ -1,11 +1,21 @@
+from pathlib import Path
+
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app.adapters.generation import get_generation_adapter
 from app.api.deps import current_actor
-from app.runtime import EnvironmentConfigurationError, validate_runtime
 from app.api.main import create_app
+from app.runtime import EnvironmentConfigurationError, validate_runtime
+
+
+def test_demo_runbook_selects_fixture_environment_for_direct_commands():
+    runbook = (Path(__file__).parents[2] / "docs" / "DEMO_RUNBOOK.md").read_text(encoding="utf-8")
+
+    assert '$env:APP_ENV = "local-fixture"; python -m app.cli reset' in runbook
+    assert '$env:APP_ENV = "local-fixture"; $env:DATABASE_URL' in runbook
+    assert '$env:NEXT_PUBLIC_APP_ENV = "local-fixture"' in runbook
 
 
 def test_fixture_reset_is_unavailable_outside_local_fixture(engine, monkeypatch):
